@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/Lzrb0x/smartBookingGoApi/internal/models"
+	"github.com/Lzrb0x/smartBookingGoApi/internal/dtos"
 	"github.com/Lzrb0x/smartBookingGoApi/internal/repositories"
 	"github.com/gin-gonic/gin"
 )
@@ -47,13 +47,14 @@ func (h *UserHandler) GetByID(c *gin.Context) {
 }
 
 func (h *UserHandler) Create(c *gin.Context) {
-	var user models.User
-	if err := c.ShouldBindJSON(&user); err != nil {
+	var req dtos.CreateUserRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	if err := h.repo.Create(c.Request.Context(), &user); err != nil {
+	user := req.ToModel()
+	if err := h.repo.Create(c.Request.Context(), user); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -67,14 +68,16 @@ func (h *UserHandler) Update(c *gin.Context) {
 		return
 	}
 
-	var user models.User
-	if err := c.ShouldBindJSON(&user); err != nil {
+	var req dtos.CreateUserRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	user := req.ToModel()
 	user.ID = id
 
-	if err := h.repo.Update(c.Request.Context(), &user); err != nil {
+	if err := h.repo.Update(c.Request.Context(), user); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

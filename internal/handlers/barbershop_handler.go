@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/Lzrb0x/smartBookingGoApi/internal/models"
+	"github.com/Lzrb0x/smartBookingGoApi/internal/dtos"
 	"github.com/Lzrb0x/smartBookingGoApi/internal/repositories"
 	"github.com/gin-gonic/gin"
 )
@@ -47,13 +47,14 @@ func (h *BarbershopHandler) GetByID(c *gin.Context) {
 }
 
 func (h *BarbershopHandler) Create(c *gin.Context) {
-	var barbershop models.Barbershop
-	if err := c.ShouldBindJSON(&barbershop); err != nil {
+	var req dtos.CreateBarbershopRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	if err := h.repo.Create(c.Request.Context(), &barbershop); err != nil {
+	barbershop := req.ToModel()
+	if err := h.repo.Create(c.Request.Context(), barbershop); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -67,14 +68,16 @@ func (h *BarbershopHandler) Update(c *gin.Context) {
 		return
 	}
 
-	var barbershop models.Barbershop
-	if err := c.ShouldBindJSON(&barbershop); err != nil {
+	var req dtos.UpdateBarbershopRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	barbershop := req.ToModel()
 	barbershop.ID = id
 
-	if err := h.repo.Update(c.Request.Context(), &barbershop); err != nil {
+	if err := h.repo.Update(c.Request.Context(), barbershop); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

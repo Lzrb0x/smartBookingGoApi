@@ -33,7 +33,7 @@ func (r *UserRepository) FindByID(ctx context.Context, id int64) (*models.User, 
 func (r *UserRepository) Create(ctx context.Context, user *models.User) error {
 	query := `
 		INSERT INTO users (user_identifier, name, email, password, phone, is_complete)
-		VALUES (:user_identifier, :name, :email, :password, :phone, :is_complete)
+		VALUES (:user_identifier, :name, NULLIF(:email, ''), :password, :phone, :is_complete)
 		RETURNING id, active, created_on`
 	rows, err := r.db.SQL.NamedQueryContext(ctx, query, user)
 	if err != nil {
@@ -49,7 +49,7 @@ func (r *UserRepository) Create(ctx context.Context, user *models.User) error {
 func (r *UserRepository) Update(ctx context.Context, user *models.User) error {
 	query := `
 		UPDATE users
-		SET name = :name, email = :email, phone = :phone, is_complete = :is_complete
+		SET name = :name, email = NULLIF(:email, ''), phone = :phone, is_complete = :is_complete
 		WHERE id = :id AND active = true`
 	_, err := r.db.SQL.NamedExecContext(ctx, query, user)
 	return err
