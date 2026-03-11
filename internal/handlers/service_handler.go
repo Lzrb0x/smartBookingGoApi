@@ -10,81 +10,81 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type UserHandler struct {
-	repo *repositories.UserRepository
+type ServiceHandler struct {
+	repo *repositories.ServiceRepository
 }
 
-func NewUserHandler(repo *repositories.UserRepository) *UserHandler {
-	return &UserHandler{repo: repo}
+func NewServiceHandler(repo *repositories.ServiceRepository) *ServiceHandler {
+	return &ServiceHandler{repo: repo}
 }
 
-func (h *UserHandler) GetAll(c *gin.Context) {
-	users, err := h.repo.FindAll(c.Request.Context())
+func (h *ServiceHandler) GetAll(c *gin.Context) {
+	services, err := h.repo.FindAll(c.Request.Context())
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, users)
+	c.JSON(http.StatusOK, services)
 }
 
-func (h *UserHandler) GetByID(c *gin.Context) {
+func (h *ServiceHandler) GetByID(c *gin.Context) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "id inválido"})
 		return
 	}
 
-	user, err := h.repo.FindByID(c.Request.Context(), id)
+	service, err := h.repo.FindByID(c.Request.Context(), id)
 	if err == sql.ErrNoRows {
-		c.JSON(http.StatusNotFound, gin.H{"error": "usuário não encontrado"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "serviço não encontrado"})
 		return
 	}
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, user)
+	c.JSON(http.StatusOK, service)
 }
 
-func (h *UserHandler) Create(c *gin.Context) { //partial-user
-	var req dtos.CreateUserRequest
+func (h *ServiceHandler) Create(c *gin.Context) {
+	var req dtos.CreateServiceRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	user := req.ToModel()
-	if err := h.repo.Create(c.Request.Context(), user); err != nil {
+	service := req.ToModel()
+	if err := h.repo.Create(c.Request.Context(), service); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusCreated, user)
+	c.JSON(http.StatusCreated, service)
 }
 
-func (h *UserHandler) Update(c *gin.Context) {
+func (h *ServiceHandler) Update(c *gin.Context) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "id inválido"})
 		return
 	}
 
-	var req dtos.CreateUserRequest
+	var req dtos.UpdateServiceRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	user := req.ToModel()
-	user.ID = id
+	service := req.ToModel()
+	service.ID = id
 
-	if err := h.repo.Update(c.Request.Context(), user); err != nil {
+	if err := h.repo.Update(c.Request.Context(), service); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, user)
+	c.JSON(http.StatusOK, service)
 }
 
-func (h *UserHandler) Delete(c *gin.Context) {
+func (h *ServiceHandler) Delete(c *gin.Context) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "id inválido"})

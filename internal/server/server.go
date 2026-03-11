@@ -36,12 +36,14 @@ func registerRouters(cfg *config.Config, db *database.DB) http.Handler {
 	barbershopRepo := repositories.NewBarbershopRepository(db)
 	ownerRepo := repositories.NewOwnerRepository(db)
 	employeeRepo := repositories.NewEmployeeRepository(db)
+	serviceRepo := repositories.NewServiceRepository(db)
 
 	// Handlers
 	userHandler := handlers.NewUserHandler(userRepo)
 	barbershopHandler := handlers.NewBarbershopHandler(barbershopRepo)
 	ownerHandler := handlers.NewOwnerHandler(ownerRepo)
 	employeeHandler := handlers.NewEmployeeHandler(employeeRepo)
+	serviceHandler := handlers.NewServiceHandler(serviceRepo)
 
 	// Routes
 	v1 := r.Group("/api/v1")
@@ -74,6 +76,15 @@ func registerRouters(cfg *config.Config, db *database.DB) http.Handler {
 				employees.POST("", employeeHandler.Create)
 				employees.DELETE("/:employee_id", employeeHandler.Delete)
 			}
+		}
+
+		services := v1.Group("/services")
+		{
+			services.GET("", serviceHandler.GetAll)
+			services.GET("/:id", serviceHandler.GetByID)
+			services.POST("", serviceHandler.Create)
+			services.PUT("/:id", serviceHandler.Update)
+			services.DELETE("/:id", serviceHandler.Delete)
 		}
 	}
 
