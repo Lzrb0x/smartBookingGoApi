@@ -42,20 +42,48 @@ func Load() (*Config, error) {
 	cfg.DatabaseURL = mustGetEnv("DATABASE_URL", &errors)
 
 	// Database configuration
-	cfg.DBMaxOpenConns = getEnvAsInt("DB_MAX_OPEN_CONNS")
-	cfg.DBMaxIdleConns = getEnvAsInt("DB_MAX_IDLE_CONNS")
-	cfg.DBConnMaxLifetime = getEnvAsDuration("DB_CONN_MAX_LIFETIME")
-	cfg.DBPingTimeout = getEnvAsDuration("DB_PING_TIMEOUT")
+	if value, err := getEnvAsInt("DB_MAX_OPEN_CONNS"); err != nil {
+		errors = append(errors, err.Error())
+	} else {
+		cfg.DBMaxOpenConns = value
+	}
+	if value, err := getEnvAsInt("DB_MAX_IDLE_CONNS"); err != nil {
+		errors = append(errors, err.Error())
+	} else {
+		cfg.DBMaxIdleConns = value
+	}
+	if value, err := getEnvAsDuration("DB_CONN_MAX_LIFETIME"); err != nil {
+		errors = append(errors, err.Error())
+	} else {
+		cfg.DBConnMaxLifetime = value
+	}
+	if value, err := getEnvAsDuration("DB_PING_TIMEOUT"); err != nil {
+		errors = append(errors, err.Error())
+	} else {
+		cfg.DBPingTimeout = value
+	}
 
 	// Server timeouts
-	cfg.ServerReadTimeout = getEnvAsDuration("SERVER_READ_TIMEOUT")
-	cfg.ServerWriteTimeout = getEnvAsDuration("SERVER_WRITE_TIMEOUT")
+	if value, err := getEnvAsDuration("SERVER_READ_TIMEOUT"); err != nil {
+		errors = append(errors, err.Error())
+	} else {
+		cfg.ServerReadTimeout = value
+	}
+	if value, err := getEnvAsDuration("SERVER_WRITE_TIMEOUT"); err != nil {
+		errors = append(errors, err.Error())
+	} else {
+		cfg.ServerWriteTimeout = value
+	}
 
 	// CORS configuration
 	cfg.CORSAllowOrigins = getEnvAsSlice("CORS_ALLOW_ORIGINS")
 	cfg.CORSAllowMethods = getEnvAsSlice("CORS_ALLOW_METHODS")
 	cfg.CORSAllowHeaders = getEnvAsSlice("CORS_ALLOW_HEADERS")
-	cfg.CORSAllowCredentials = getEnvAsBool("CORS_ALLOW_CREDENTIALS")
+	if value, err := getEnvAsBool("CORS_ALLOW_CREDENTIALS"); err != nil {
+		errors = append(errors, err.Error())
+	} else {
+		cfg.CORSAllowCredentials = value
+	}
 
 	if len(errors) > 0 {
 		return nil, fmt.Errorf("missing required environment variables: %s", strings.Join(errors, ", "))
@@ -73,30 +101,30 @@ func mustGetEnv(key string, errors *[]string) string {
 	return value
 }
 
-func getEnvAsInt(key string) int {
+func getEnvAsInt(key string) (int, error) {
 	value := os.Getenv(key)
 	if value == "" {
 		log.Printf("warning: %s not set, defaulting to 0", key)
-		return 0
+		return 0, nil
 	}
 	result, err := strconv.Atoi(value)
 	if err != nil {
-		log.Fatalf("invalid integer value for %s: %v", key, err)
+		return 0, fmt.Errorf("invalid integer value for %s: %w", key, err)
 	}
-	return result
+	return result, nil
 }
 
-func getEnvAsDuration(key string) time.Duration {
+func getEnvAsDuration(key string) (time.Duration, error) {
 	value := os.Getenv(key)
 	if value == "" {
 		log.Printf("warning: %s not set, defaulting to 0", key)
-		return 0
+		return 0, nil
 	}
 	duration, err := time.ParseDuration(value)
 	if err != nil {
-		log.Fatalf("invalid duration value for %s: %v", key, err)
+		return 0, fmt.Errorf("invalid duration value for %s: %w", key, err)
 	}
-	return duration
+	return duration, nil
 }
 
 func getEnvAsSlice(key string) []string {
@@ -116,15 +144,15 @@ func getEnvAsSlice(key string) []string {
 	return result
 }
 
-func getEnvAsBool(key string) bool {
+func getEnvAsBool(key string) (bool, error) {
 	value := os.Getenv(key)
 	if value == "" {
 		log.Printf("warning: %s not set, defaulting to false", key)
-		return false
+		return false, nil
 	}
 	result, err := strconv.ParseBool(value)
 	if err != nil {
-		log.Fatalf("invalid boolean value for %s: %v", key, err)
+		return false, fmt.Errorf("invalid boolean value for %s: %w", key, err)
 	}
-	return result
+	return result, nil
 }
