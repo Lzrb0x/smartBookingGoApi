@@ -39,6 +39,8 @@ func registerRouters(cfg *config.Config, db *database.DB) http.Handler {
 	serviceRepo := repositories.NewServiceRepository(db)
 	barbershopServiceRepo := repositories.NewBarbershopServiceRepository(db)
 	serviceEmployeeRepo := repositories.NewServiceEmployeeRepository(db)
+	employeeWorkingHourRepo := repositories.NewEmployeeWorkingHourRepository(db)
+	employeeWorkingHourOverrideRepo := repositories.NewEmployeeWorkingHourOverrideRepository(db)
 
 	// Handlers
 	userHandler := handlers.NewUserHandler(userRepo)
@@ -48,6 +50,8 @@ func registerRouters(cfg *config.Config, db *database.DB) http.Handler {
 	serviceHandler := handlers.NewServiceHandler(serviceRepo)
 	barbershopServiceHandler := handlers.NewBarbershopServiceHandler(barbershopServiceRepo)
 	serviceEmployeeHandler := handlers.NewServiceEmployeeHandler(serviceEmployeeRepo)
+	employeeWorkingHourHandler := handlers.NewEmployeeWorkingHourHandler(employeeWorkingHourRepo, employeeRepo)
+	employeeWorkingHourOverrideHandler := handlers.NewEmployeeWorkingHourOverrideHandler(employeeWorkingHourOverrideRepo, employeeRepo)
 
 	// Routes
 	v1 := r.Group("/api/v1")
@@ -79,6 +83,24 @@ func registerRouters(cfg *config.Config, db *database.DB) http.Handler {
 				employees.GET("", employeeHandler.GetAll)
 				employees.POST("", employeeHandler.Create)
 				employees.DELETE("/:employee_id", employeeHandler.Delete)
+
+				workingHours := employees.Group("/:employeeId/working-hours")
+				{
+					workingHours.GET("", employeeWorkingHourHandler.GetAll)
+					workingHours.GET("/:id", employeeWorkingHourHandler.GetByID)
+					workingHours.POST("", employeeWorkingHourHandler.Create)
+					workingHours.PUT("/:id", employeeWorkingHourHandler.Update)
+					workingHours.DELETE("/:id", employeeWorkingHourHandler.Delete)
+				}
+
+				workingHourOverrides := employees.Group("/:employeeId/working-hour-overrides")
+				{
+					workingHourOverrides.GET("", employeeWorkingHourOverrideHandler.GetAll)
+					workingHourOverrides.GET("/:id", employeeWorkingHourOverrideHandler.GetByID)
+					workingHourOverrides.POST("", employeeWorkingHourOverrideHandler.Create)
+					workingHourOverrides.PUT("/:id", employeeWorkingHourOverrideHandler.Update)
+					workingHourOverrides.DELETE("/:id", employeeWorkingHourOverrideHandler.Delete)
+				}
 			}
 
 			services := barbershops.Group("/:id/services")

@@ -32,3 +32,10 @@ func (r *EmployeeRepository) Delete(ctx context.Context, barbershopID, employeeI
 		`DELETE FROM employees WHERE id = $1 AND barbershop_id = $2`, employeeID, barbershopID)
 	return err
 }
+
+func (r *EmployeeRepository) ExistsInBarbershop(ctx context.Context, employeeID, barbershopID int64) (bool, error) {
+	var exists bool
+	err := r.db.SQL.QueryRowContext(ctx,
+		`SELECT EXISTS(SELECT 1 FROM employees WHERE id = $1 AND barbershop_id = $2)`, employeeID, barbershopID).Scan(&exists)
+	return exists, err
+}
