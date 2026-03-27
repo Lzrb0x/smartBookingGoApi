@@ -38,6 +38,7 @@ func registerRouters(cfg *config.Config, db *database.DB) http.Handler {
 	employeeRepo := repositories.NewEmployeeRepository(db)
 	serviceRepo := repositories.NewServiceRepository(db)
 	barbershopServiceRepo := repositories.NewBarbershopServiceRepository(db)
+	serviceEmployeeRepo := repositories.NewServiceEmployeeRepository(db)
 
 	// Handlers
 	userHandler := handlers.NewUserHandler(userRepo)
@@ -46,6 +47,7 @@ func registerRouters(cfg *config.Config, db *database.DB) http.Handler {
 	employeeHandler := handlers.NewEmployeeHandler(employeeRepo)
 	serviceHandler := handlers.NewServiceHandler(serviceRepo)
 	barbershopServiceHandler := handlers.NewBarbershopServiceHandler(barbershopServiceRepo)
+	serviceEmployeeHandler := handlers.NewServiceEmployeeHandler(serviceEmployeeRepo)
 
 	// Routes
 	v1 := r.Group("/api/v1")
@@ -86,6 +88,15 @@ func registerRouters(cfg *config.Config, db *database.DB) http.Handler {
 				services.POST("", barbershopServiceHandler.Create)
 				services.PUT("/:service_id", barbershopServiceHandler.Update)
 				services.DELETE("/:service_id", barbershopServiceHandler.Delete)
+			}
+
+			serviceEmployees := barbershops.Group("/:id/service-employees")
+			{
+				serviceEmployees.POST("/assign", serviceEmployeeHandler.AssignService)
+				serviceEmployees.DELETE("/unassign", serviceEmployeeHandler.UnassignService)
+				serviceEmployees.GET("/employees/:serviceId", serviceEmployeeHandler.GetEmployeesByService)
+				serviceEmployees.GET("/services/:employeeId", serviceEmployeeHandler.GetServicesByEmployee)
+				serviceEmployees.GET("/check/:employeeId/:serviceId", serviceEmployeeHandler.IsAssigned)
 			}
 		}
 
