@@ -41,6 +41,7 @@ func registerRouters(cfg *config.Config, db *database.DB) http.Handler {
 	serviceEmployeeRepo := repositories.NewServiceEmployeeRepository(db)
 	employeeWorkingHourRepo := repositories.NewEmployeeWorkingHourRepository(db)
 	employeeWorkingHourOverrideRepo := repositories.NewEmployeeWorkingHourOverrideRepository(db)
+	bookingRepo := repositories.NewBookingRepository(db)
 
 	// Handlers
 	userHandler := handlers.NewUserHandler(userRepo)
@@ -52,6 +53,14 @@ func registerRouters(cfg *config.Config, db *database.DB) http.Handler {
 	serviceEmployeeHandler := handlers.NewServiceEmployeeHandler(serviceEmployeeRepo)
 	employeeWorkingHourHandler := handlers.NewEmployeeWorkingHourHandler(employeeWorkingHourRepo, employeeRepo)
 	employeeWorkingHourOverrideHandler := handlers.NewEmployeeWorkingHourOverrideHandler(employeeWorkingHourOverrideRepo, employeeRepo)
+	bookingHandler := handlers.NewBookingHandler(
+		bookingRepo,
+		employeeRepo,
+		barbershopServiceRepo,
+		serviceEmployeeRepo,
+		employeeWorkingHourRepo,
+		employeeWorkingHourOverrideRepo,
+	)
 
 	// Routes
 	v1 := r.Group("/api/v1")
@@ -83,6 +92,7 @@ func registerRouters(cfg *config.Config, db *database.DB) http.Handler {
 				employees.GET("", employeeHandler.GetAll)
 				employees.POST("", employeeHandler.Create)
 				employees.DELETE("/:employee_id", employeeHandler.Delete)
+				employees.GET("/:employeeId/availability", bookingHandler.GetAvailability)
 
 				workingHours := employees.Group("/:employeeId/working-hours")
 				{
@@ -119,6 +129,11 @@ func registerRouters(cfg *config.Config, db *database.DB) http.Handler {
 				serviceEmployees.GET("/employees/:serviceId", serviceEmployeeHandler.GetEmployeesByService)
 				serviceEmployees.GET("/services/:employeeId", serviceEmployeeHandler.GetServicesByEmployee)
 				serviceEmployees.GET("/check/:employeeId/:serviceId", serviceEmployeeHandler.IsAssigned)
+			}
+
+			bookings := barbershops.Group("/:id/bookings")
+			{
+				bookings.POST("", bookingHandler.Create)
 			}
 		}
 

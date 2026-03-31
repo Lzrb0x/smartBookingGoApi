@@ -36,6 +36,14 @@ func (r *EmployeeWorkingHourOverrideRepository) FindByEmployee(ctx context.Conte
 	return overrides, err
 }
 
+func (r *EmployeeWorkingHourOverrideRepository) FindByEmployeeAndDate(ctx context.Context, employeeID int64, date time.Time) (*models.EmployeeWorkingHourOverride, error) {
+	var override models.EmployeeWorkingHourOverride
+	err := r.db.SQL.GetContext(ctx, &override,
+		`SELECT id, employee_id, date, start_time, end_time, is_day_off FROM employee_working_hour_overrides WHERE employee_id = $1 AND date = $2`,
+		employeeID, date)
+	return &override, err
+}
+
 func (r *EmployeeWorkingHourOverrideRepository) FindByEmployeeAndBarbershop(ctx context.Context, employeeID, barbershopID int64) ([]models.EmployeeWorkingHourOverride, error) {
 	var overrides []models.EmployeeWorkingHourOverride
 	err := r.db.SQL.SelectContext(ctx, &overrides,
