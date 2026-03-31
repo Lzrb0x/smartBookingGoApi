@@ -21,7 +21,7 @@ func NewEmployeeWorkingHourHandler(repo *repositories.EmployeeWorkingHourReposit
 }
 
 func (h *EmployeeWorkingHourHandler) GetAll(c *gin.Context) {
-	barbershopID, err := strconv.ParseInt(c.Param("barbershopId"), 10, 64)
+	barbershopID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "barbershop_id inválido"})
 		return
@@ -54,7 +54,7 @@ func (h *EmployeeWorkingHourHandler) GetAll(c *gin.Context) {
 }
 
 func (h *EmployeeWorkingHourHandler) GetByID(c *gin.Context) {
-	barbershopID, err := strconv.ParseInt(c.Param("barbershopId"), 10, 64)
+	barbershopID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "barbershop_id inválido"})
 		return
@@ -66,7 +66,7 @@ func (h *EmployeeWorkingHourHandler) GetByID(c *gin.Context) {
 		return
 	}
 
-	whID, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	whID, err := strconv.ParseInt(c.Param("workingHourId"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "id inválido"})
 		return
@@ -103,7 +103,7 @@ func (h *EmployeeWorkingHourHandler) GetByID(c *gin.Context) {
 }
 
 func (h *EmployeeWorkingHourHandler) Create(c *gin.Context) {
-	barbershopID, err := strconv.ParseInt(c.Param("barbershopId"), 10, 64)
+	barbershopID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "barbershop_id inválido"})
 		return
@@ -170,7 +170,7 @@ func (h *EmployeeWorkingHourHandler) Create(c *gin.Context) {
 }
 
 func (h *EmployeeWorkingHourHandler) Update(c *gin.Context) {
-	barbershopID, err := strconv.ParseInt(c.Param("barbershopId"), 10, 64)
+	barbershopID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "barbershop_id inválido"})
 		return
@@ -182,7 +182,7 @@ func (h *EmployeeWorkingHourHandler) Update(c *gin.Context) {
 		return
 	}
 
-	whID, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	whID, err := strconv.ParseInt(c.Param("workingHourId"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "id inválido"})
 		return
@@ -259,7 +259,7 @@ func (h *EmployeeWorkingHourHandler) Update(c *gin.Context) {
 }
 
 func (h *EmployeeWorkingHourHandler) Delete(c *gin.Context) {
-	barbershopID, err := strconv.ParseInt(c.Param("barbershopId"), 10, 64)
+	barbershopID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "barbershop_id inválido"})
 		return
@@ -271,7 +271,7 @@ func (h *EmployeeWorkingHourHandler) Delete(c *gin.Context) {
 		return
 	}
 
-	whID, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	whID, err := strconv.ParseInt(c.Param("workingHourId"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "id inválido"})
 		return

@@ -8,8 +8,11 @@ import (
 	"github.com/Lzrb0x/smartBookingGoApi/internal/database"
 	"github.com/Lzrb0x/smartBookingGoApi/internal/handlers"
 	"github.com/Lzrb0x/smartBookingGoApi/internal/repositories"
+	"github.com/Lzrb0x/smartBookingGoApi/internal/swagger"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func NewServer(cfg *config.Config, db *database.DB) *http.Server {
@@ -30,6 +33,11 @@ func registerRouters(cfg *config.Config, db *database.DB) http.Handler {
 		AllowHeaders:     cfg.CORSAllowHeaders,
 		AllowCredentials: cfg.CORSAllowCredentials,
 	}))
+
+	r.GET("/swagger.json", func(c *gin.Context) {
+		c.Data(http.StatusOK, "application/json; charset=utf-8", swagger.Spec())
+	})
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, ginSwagger.URL("/swagger.json")))
 
 	// Repositories
 	userRepo := repositories.NewUserRepository(db)
@@ -91,25 +99,25 @@ func registerRouters(cfg *config.Config, db *database.DB) http.Handler {
 			{
 				employees.GET("", employeeHandler.GetAll)
 				employees.POST("", employeeHandler.Create)
-				employees.DELETE("/:employee_id", employeeHandler.Delete)
+				employees.DELETE("/:employeeId", employeeHandler.Delete)
 				employees.GET("/:employeeId/availability", bookingHandler.GetAvailability)
 
 				workingHours := employees.Group("/:employeeId/working-hours")
 				{
 					workingHours.GET("", employeeWorkingHourHandler.GetAll)
-					workingHours.GET("/:id", employeeWorkingHourHandler.GetByID)
+					workingHours.GET("/:workingHourId", employeeWorkingHourHandler.GetByID)
 					workingHours.POST("", employeeWorkingHourHandler.Create)
-					workingHours.PUT("/:id", employeeWorkingHourHandler.Update)
-					workingHours.DELETE("/:id", employeeWorkingHourHandler.Delete)
+					workingHours.PUT("/:workingHourId", employeeWorkingHourHandler.Update)
+					workingHours.DELETE("/:workingHourId", employeeWorkingHourHandler.Delete)
 				}
 
 				workingHourOverrides := employees.Group("/:employeeId/working-hour-overrides")
 				{
 					workingHourOverrides.GET("", employeeWorkingHourOverrideHandler.GetAll)
-					workingHourOverrides.GET("/:id", employeeWorkingHourOverrideHandler.GetByID)
+					workingHourOverrides.GET("/:overrideId", employeeWorkingHourOverrideHandler.GetByID)
 					workingHourOverrides.POST("", employeeWorkingHourOverrideHandler.Create)
-					workingHourOverrides.PUT("/:id", employeeWorkingHourOverrideHandler.Update)
-					workingHourOverrides.DELETE("/:id", employeeWorkingHourOverrideHandler.Delete)
+					workingHourOverrides.PUT("/:overrideId", employeeWorkingHourOverrideHandler.Update)
+					workingHourOverrides.DELETE("/:overrideId", employeeWorkingHourOverrideHandler.Delete)
 				}
 			}
 

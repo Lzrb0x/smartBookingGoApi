@@ -1,0 +1,1385 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Smart Booking API",
+    "version": "1.0.0",
+    "description": "API documentation for the Smart Booking platform."
+  },
+  "servers": [
+    {
+      "url": "/"
+    }
+  ],
+  "paths": {
+    "/api/v1/users": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "List users",
+        "responses": {
+          "200": {
+            "description": "List of users",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/User" }
+                }
+              }
+            }
+          },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      },
+      "post": {
+        "tags": ["Users"],
+        "summary": "Create user",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateUserRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created user",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/User" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    },
+    "/api/v1/users/{id}": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Get user by ID",
+        "parameters": [
+          { "$ref": "#/components/parameters/UserId" }
+        ],
+        "responses": {
+          "200": {
+            "description": "User",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/User" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      },
+      "put": {
+        "tags": ["Users"],
+        "summary": "Update user",
+        "parameters": [
+          { "$ref": "#/components/parameters/UserId" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateUserRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated user",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/User" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      },
+      "delete": {
+        "tags": ["Users"],
+        "summary": "Delete user",
+        "parameters": [
+          { "$ref": "#/components/parameters/UserId" }
+        ],
+        "responses": {
+          "204": { "description": "Deleted" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    },
+    "/api/v1/owners": {
+      "post": {
+        "tags": ["Owners"],
+        "summary": "Create owner",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateOwnerRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created owner",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Owner" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    },
+    "/api/v1/barbershops": {
+      "get": {
+        "tags": ["Barbershops"],
+        "summary": "List barbershops",
+        "responses": {
+          "200": {
+            "description": "List of barbershops",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Barbershop" }
+                }
+              }
+            }
+          },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      },
+      "post": {
+        "tags": ["Barbershops"],
+        "summary": "Create barbershop",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateBarbershopRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created barbershop",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Barbershop" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    },
+    "/api/v1/barbershops/{id}": {
+      "get": {
+        "tags": ["Barbershops"],
+        "summary": "Get barbershop by ID",
+        "parameters": [
+          { "$ref": "#/components/parameters/BarbershopId" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Barbershop",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Barbershop" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      },
+      "put": {
+        "tags": ["Barbershops"],
+        "summary": "Update barbershop",
+        "parameters": [
+          { "$ref": "#/components/parameters/BarbershopId" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdateBarbershopRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated barbershop",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Barbershop" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      },
+      "delete": {
+        "tags": ["Barbershops"],
+        "summary": "Delete barbershop",
+        "parameters": [
+          { "$ref": "#/components/parameters/BarbershopId" }
+        ],
+        "responses": {
+          "204": { "description": "Deleted" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    },
+    "/api/v1/barbershops/{id}/employees": {
+      "get": {
+        "tags": ["Employees"],
+        "summary": "List employees for a barbershop",
+        "parameters": [
+          { "$ref": "#/components/parameters/BarbershopId" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Employees",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Employee" }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      },
+      "post": {
+        "tags": ["Employees"],
+        "summary": "Create employee for a barbershop",
+        "parameters": [
+          { "$ref": "#/components/parameters/BarbershopId" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateEmployeeRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created employee",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Employee" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    },
+    "/api/v1/barbershops/{id}/employees/{employeeId}": {
+      "delete": {
+        "tags": ["Employees"],
+        "summary": "Delete employee from barbershop",
+        "parameters": [
+          { "$ref": "#/components/parameters/BarbershopId" },
+          {
+            "name": "employeeId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "204": { "description": "Deleted" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    },
+    "/api/v1/barbershops/{id}/employees/{employeeId}/availability": {
+      "get": {
+        "tags": ["Bookings"],
+        "summary": "Get availability for an employee",
+        "parameters": [
+          { "$ref": "#/components/parameters/BarbershopId" },
+          { "$ref": "#/components/parameters/EmployeeId" },
+          {
+            "name": "date",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "example": "2026-03-31" }
+          },
+          {
+            "name": "barbershop_service_id",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          },
+          {
+            "name": "start_time",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string", "example": "09:00:00" }
+          },
+          {
+            "name": "end_time",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string", "example": "18:00:00" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Availability",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AvailabilityResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    },
+    "/api/v1/barbershops/{id}/employees/{employeeId}/working-hours": {
+      "get": {
+        "tags": ["Working Hours"],
+        "summary": "List working hours for an employee",
+        "parameters": [
+          { "$ref": "#/components/parameters/BarbershopId" },
+          { "$ref": "#/components/parameters/EmployeeId" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Working hours",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/EmployeeWorkingHourResponse" }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      },
+      "post": {
+        "tags": ["Working Hours"],
+        "summary": "Create working hour for an employee",
+        "parameters": [
+          { "$ref": "#/components/parameters/BarbershopId" },
+          { "$ref": "#/components/parameters/EmployeeId" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateEmployeeWorkingHourRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created working hour",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/EmployeeWorkingHourResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    },
+    "/api/v1/barbershops/{id}/employees/{employeeId}/working-hours/{workingHourId}": {
+      "get": {
+        "tags": ["Working Hours"],
+        "summary": "Get working hour by ID",
+        "parameters": [
+          { "$ref": "#/components/parameters/BarbershopId" },
+          { "$ref": "#/components/parameters/EmployeeId" },
+          {
+            "name": "workingHourId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Working hour",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/EmployeeWorkingHourResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      },
+      "put": {
+        "tags": ["Working Hours"],
+        "summary": "Update working hour",
+        "parameters": [
+          { "$ref": "#/components/parameters/BarbershopId" },
+          { "$ref": "#/components/parameters/EmployeeId" },
+          {
+            "name": "workingHourId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdateEmployeeWorkingHourRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated working hour",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/EmployeeWorkingHourResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      },
+      "delete": {
+        "tags": ["Working Hours"],
+        "summary": "Delete working hour",
+        "parameters": [
+          { "$ref": "#/components/parameters/BarbershopId" },
+          { "$ref": "#/components/parameters/EmployeeId" },
+          {
+            "name": "workingHourId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "204": { "description": "Deleted" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    },
+    "/api/v1/barbershops/{id}/employees/{employeeId}/working-hour-overrides": {
+      "get": {
+        "tags": ["Working Hour Overrides"],
+        "summary": "List working hour overrides",
+        "parameters": [
+          { "$ref": "#/components/parameters/BarbershopId" },
+          { "$ref": "#/components/parameters/EmployeeId" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Overrides",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/EmployeeWorkingHourOverrideResponse" }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      },
+      "post": {
+        "tags": ["Working Hour Overrides"],
+        "summary": "Create working hour override",
+        "parameters": [
+          { "$ref": "#/components/parameters/BarbershopId" },
+          { "$ref": "#/components/parameters/EmployeeId" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateEmployeeWorkingHourOverrideRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created override",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/EmployeeWorkingHourOverrideResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "409": { "$ref": "#/components/responses/Conflict" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    },
+    "/api/v1/barbershops/{id}/employees/{employeeId}/working-hour-overrides/{overrideId}": {
+      "get": {
+        "tags": ["Working Hour Overrides"],
+        "summary": "Get override by ID",
+        "parameters": [
+          { "$ref": "#/components/parameters/BarbershopId" },
+          { "$ref": "#/components/parameters/EmployeeId" },
+          {
+            "name": "overrideId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Override",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/EmployeeWorkingHourOverrideResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      },
+      "put": {
+        "tags": ["Working Hour Overrides"],
+        "summary": "Update working hour override",
+        "parameters": [
+          { "$ref": "#/components/parameters/BarbershopId" },
+          { "$ref": "#/components/parameters/EmployeeId" },
+          {
+            "name": "overrideId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdateEmployeeWorkingHourOverrideRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated override",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/EmployeeWorkingHourOverrideResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "409": { "$ref": "#/components/responses/Conflict" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      },
+      "delete": {
+        "tags": ["Working Hour Overrides"],
+        "summary": "Delete working hour override",
+        "parameters": [
+          { "$ref": "#/components/parameters/BarbershopId" },
+          { "$ref": "#/components/parameters/EmployeeId" },
+          {
+            "name": "overrideId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "204": { "description": "Deleted" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    },
+    "/api/v1/barbershops/{id}/services": {
+      "get": {
+        "tags": ["Barbershop Services"],
+        "summary": "List barbershop services",
+        "parameters": [
+          { "$ref": "#/components/parameters/BarbershopId" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Barbershop services",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/BarbershopService" }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      },
+      "post": {
+        "tags": ["Barbershop Services"],
+        "summary": "Create barbershop service",
+        "parameters": [
+          { "$ref": "#/components/parameters/BarbershopId" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateBarbershopServiceRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created barbershop service",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/BarbershopService" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    },
+    "/api/v1/barbershops/{id}/services/{service_id}": {
+      "get": {
+        "tags": ["Barbershop Services"],
+        "summary": "Get barbershop service by ID",
+        "parameters": [
+          { "$ref": "#/components/parameters/BarbershopId" },
+          {
+            "name": "service_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Barbershop service",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/BarbershopService" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      },
+      "put": {
+        "tags": ["Barbershop Services"],
+        "summary": "Update barbershop service",
+        "parameters": [
+          { "$ref": "#/components/parameters/BarbershopId" },
+          {
+            "name": "service_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdateBarbershopServiceRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated barbershop service",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/BarbershopService" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      },
+      "delete": {
+        "tags": ["Barbershop Services"],
+        "summary": "Delete barbershop service",
+        "parameters": [
+          { "$ref": "#/components/parameters/BarbershopId" },
+          {
+            "name": "service_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "204": { "description": "Deleted" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    },
+    "/api/v1/barbershops/{id}/service-employees/assign": {
+      "post": {
+        "tags": ["Service Employees"],
+        "summary": "Assign service to employee",
+        "parameters": [
+          { "$ref": "#/components/parameters/BarbershopId" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/AssignServiceRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Assigned",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ServiceEmployeeResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "409": { "$ref": "#/components/responses/Conflict" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    },
+    "/api/v1/barbershops/{id}/service-employees/unassign": {
+      "delete": {
+        "tags": ["Service Employees"],
+        "summary": "Unassign service from employee",
+        "parameters": [
+          { "$ref": "#/components/parameters/BarbershopId" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UnassignServiceRequest" }
+            }
+          }
+        },
+        "responses": {
+          "204": { "description": "Deleted" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    },
+    "/api/v1/barbershops/{id}/service-employees/employees/{serviceId}": {
+      "get": {
+        "tags": ["Service Employees"],
+        "summary": "List employees by service",
+        "parameters": [
+          { "$ref": "#/components/parameters/BarbershopId" },
+          { "$ref": "#/components/parameters/ServiceId" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Service employees",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/ServiceEmployeeResponse" }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    },
+    "/api/v1/barbershops/{id}/service-employees/services/{employeeId}": {
+      "get": {
+        "tags": ["Service Employees"],
+        "summary": "List services by employee",
+        "parameters": [
+          { "$ref": "#/components/parameters/BarbershopId" },
+          { "$ref": "#/components/parameters/EmployeeId" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Service employees",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/ServiceEmployeeResponse" }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    },
+    "/api/v1/barbershops/{id}/service-employees/check/{employeeId}/{serviceId}": {
+      "get": {
+        "tags": ["Service Employees"],
+        "summary": "Check if employee is assigned to a service",
+        "parameters": [
+          { "$ref": "#/components/parameters/BarbershopId" },
+          { "$ref": "#/components/parameters/EmployeeId" },
+          { "$ref": "#/components/parameters/ServiceId" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Assignment status",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AssignedResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    },
+    "/api/v1/barbershops/{id}/bookings": {
+      "post": {
+        "tags": ["Bookings"],
+        "summary": "Create booking",
+        "parameters": [
+          { "$ref": "#/components/parameters/BarbershopId" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateBookingRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created booking",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/BookingResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "409": { "$ref": "#/components/responses/Conflict" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    },
+    "/api/v1/services": {
+      "get": {
+        "tags": ["Services"],
+        "summary": "List services",
+        "responses": {
+          "200": {
+            "description": "Services",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Service" }
+                }
+              }
+            }
+          },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      },
+      "post": {
+        "tags": ["Services"],
+        "summary": "Create service",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateServiceRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created service",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Service" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    },
+    "/api/v1/services/{id}": {
+      "get": {
+        "tags": ["Services"],
+        "summary": "Get service by ID",
+        "parameters": [
+          { "$ref": "#/components/parameters/ServiceIdAlt" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Service",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Service" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      },
+      "put": {
+        "tags": ["Services"],
+        "summary": "Update service",
+        "parameters": [
+          { "$ref": "#/components/parameters/ServiceIdAlt" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdateServiceRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated service",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Service" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      },
+      "delete": {
+        "tags": ["Services"],
+        "summary": "Delete service",
+        "parameters": [
+          { "$ref": "#/components/parameters/ServiceIdAlt" }
+        ],
+        "responses": {
+          "204": { "description": "Deleted" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    }
+  },
+  "components": {
+    "parameters": {
+      "UserId": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "integer", "format": "int64" }
+      },
+      "BarbershopId": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "integer", "format": "int64" }
+      },
+      "EmployeeId": {
+        "name": "employeeId",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "integer", "format": "int64" }
+      },
+      "ServiceId": {
+        "name": "serviceId",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "integer", "format": "int64" }
+      },
+      "ServiceIdAlt": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "integer", "format": "int64" }
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "Bad request",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "Not found",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+          }
+        }
+      },
+      "Conflict": {
+        "description": "Conflict",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+          }
+        }
+      },
+      "InternalError": {
+        "description": "Internal server error",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": { "type": "string" }
+        }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "format": "int64" },
+          "active": { "type": "boolean" },
+          "created_on": { "type": "string", "format": "date-time" },
+          "user_identifier": { "type": "string" },
+          "name": { "type": "string" },
+          "email": { "type": "string" },
+          "phone": { "type": "string" },
+          "is_complete": { "type": "boolean" }
+        }
+      },
+      "Owner": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "format": "int64" },
+          "user_id": { "type": "integer", "format": "int64" }
+        }
+      },
+      "Barbershop": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "format": "int64" },
+          "barbershop_name": { "type": "string" },
+          "address": { "type": "string" },
+          "phone": { "type": "string" },
+          "owner_id": { "type": "integer", "format": "int64" }
+        }
+      },
+      "Employee": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "format": "int64" },
+          "user_id": { "type": "integer", "format": "int64" },
+          "barbershop_id": { "type": "integer", "format": "int64" }
+        }
+      },
+      "Service": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "format": "int64" },
+          "name": { "type": "string" },
+          "description": { "type": "string" }
+        }
+      },
+      "BarbershopService": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "format": "int64" },
+          "price": { "type": "number", "format": "float" },
+          "duration": { "type": "integer" },
+          "description_override": { "type": "string" },
+          "barbershop_id": { "type": "integer", "format": "int64" },
+          "service_id": { "type": "integer", "format": "int64" }
+        }
+      },
+      "ServiceEmployeeResponse": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "format": "int64" },
+          "employee_id": { "type": "integer", "format": "int64" },
+          "barbershop_service_id": { "type": "integer", "format": "int64" }
+        }
+      },
+      "EmployeeWorkingHourResponse": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "format": "int64" },
+          "employee_id": { "type": "integer", "format": "int64" },
+          "day_of_week": { "type": "integer" },
+          "start_time": { "type": "string", "example": "09:00:00" },
+          "end_time": { "type": "string", "example": "18:00:00" },
+          "is_day_off": { "type": "boolean" }
+        }
+      },
+      "EmployeeWorkingHourOverrideResponse": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "format": "int64" },
+          "employee_id": { "type": "integer", "format": "int64" },
+          "date": { "type": "string", "example": "2026-03-31" },
+          "start_time": { "type": "string", "example": "09:00:00" },
+          "end_time": { "type": "string", "example": "18:00:00" },
+          "is_day_off": { "type": "boolean" }
+        }
+      },
+      "BookingResponse": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "format": "int64" },
+          "customer_id": { "type": "integer", "format": "int64" },
+          "employee_id": { "type": "integer", "format": "int64" },
+          "barbershop_id": { "type": "integer", "format": "int64" },
+          "barbershop_service_id": { "type": "integer", "format": "int64" },
+          "date": { "type": "string", "example": "2026-03-31" },
+          "start_time": { "type": "string", "example": "10:00:00" },
+          "end_time": { "type": "string", "example": "10:30:00" }
+        }
+      },
+      "AvailabilityResponse": {
+        "type": "object",
+        "properties": {
+          "date": { "type": "string", "example": "2026-03-31" },
+          "employee_id": { "type": "integer", "format": "int64" },
+          "barbershop_service_id": { "type": "integer", "format": "int64" },
+          "service_duration": { "type": "integer" },
+          "slots": {
+            "type": "array",
+            "items": { "type": "string", "example": "09:00:00" }
+          }
+        }
+      },
+      "AssignedResponse": {
+        "type": "object",
+        "properties": {
+          "assigned": { "type": "boolean" }
+        }
+      },
+      "CreateUserRequest": {
+        "type": "object",
+        "required": ["name", "phone"],
+        "properties": {
+          "name": { "type": "string" },
+          "phone": { "type": "string" },
+          "email": { "type": "string" },
+          "password": { "type": "string" }
+        }
+      },
+      "CreateOwnerRequest": {
+        "type": "object",
+        "required": ["user_id"],
+        "properties": {
+          "user_id": { "type": "integer", "format": "int64" }
+        }
+      },
+      "CreateBarbershopRequest": {
+        "type": "object",
+        "required": ["barbershop_name", "owner_id"],
+        "properties": {
+          "barbershop_name": { "type": "string" },
+          "owner_id": { "type": "integer", "format": "int64" },
+          "address": { "type": "string" },
+          "phone": { "type": "string" }
+        }
+      },
+      "UpdateBarbershopRequest": {
+        "type": "object",
+        "required": ["barbershop_name"],
+        "properties": {
+          "barbershop_name": { "type": "string" },
+          "address": { "type": "string" },
+          "phone": { "type": "string" }
+        }
+      },
+      "CreateEmployeeRequest": {
+        "type": "object",
+        "required": ["user_id"],
+        "properties": {
+          "user_id": { "type": "integer", "format": "int64" }
+        }
+      },
+      "CreateServiceRequest": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": { "type": "string" },
+          "description": { "type": "string" }
+        }
+      },
+      "UpdateServiceRequest": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": { "type": "string" },
+          "description": { "type": "string" }
+        }
+      },
+      "CreateBarbershopServiceRequest": {
+        "type": "object",
+        "required": ["price", "duration", "service_id"],
+        "properties": {
+          "price": { "type": "number", "format": "float" },
+          "duration": { "type": "integer" },
+          "description_override": { "type": "string" },
+          "service_id": { "type": "integer", "format": "int64" }
+        }
+      },
+      "UpdateBarbershopServiceRequest": {
+        "type": "object",
+        "required": ["price", "duration", "service_id"],
+        "properties": {
+          "price": { "type": "number", "format": "float" },
+          "duration": { "type": "integer" },
+          "description_override": { "type": "string" },
+          "service_id": { "type": "integer", "format": "int64" }
+        }
+      },
+      "AssignServiceRequest": {
+        "type": "object",
+        "required": ["employee_id", "barbershop_service_id"],
+        "properties": {
+          "employee_id": { "type": "integer", "format": "int64" },
+          "barbershop_service_id": { "type": "integer", "format": "int64" }
+        }
+      },
+      "UnassignServiceRequest": {
+        "type": "object",
+        "required": ["employee_id", "barbershop_service_id"],
+        "properties": {
+          "employee_id": { "type": "integer", "format": "int64" },
+          "barbershop_service_id": { "type": "integer", "format": "int64" }
+        }
+      },
+      "CreateEmployeeWorkingHourRequest": {
+        "type": "object",
+        "required": ["day_of_week"],
+        "properties": {
+          "day_of_week": { "type": "integer" },
+          "start_time": { "type": "string", "example": "09:00:00" },
+          "end_time": { "type": "string", "example": "18:00:00" },
+          "is_day_off": { "type": "boolean" }
+        }
+      },
+      "UpdateEmployeeWorkingHourRequest": {
+        "type": "object",
+        "required": ["day_of_week"],
+        "properties": {
+          "day_of_week": { "type": "integer" },
+          "start_time": { "type": "string", "example": "09:00:00" },
+          "end_time": { "type": "string", "example": "18:00:00" },
+          "is_day_off": { "type": "boolean" }
+        }
+      },
+      "CreateEmployeeWorkingHourOverrideRequest": {
+        "type": "object",
+        "required": ["date"],
+        "properties": {
+          "date": { "type": "string", "example": "2026-03-31" },
+          "start_time": { "type": "string", "example": "09:00:00" },
+          "end_time": { "type": "string", "example": "18:00:00" },
+          "is_day_off": { "type": "boolean" }
+        }
+      },
+      "UpdateEmployeeWorkingHourOverrideRequest": {
+        "type": "object",
+        "required": ["date"],
+        "properties": {
+          "date": { "type": "string", "example": "2026-03-31" },
+          "start_time": { "type": "string", "example": "09:00:00" },
+          "end_time": { "type": "string", "example": "18:00:00" },
+          "is_day_off": { "type": "boolean" }
+        }
+      },
+      "CreateBookingRequest": {
+        "type": "object",
+        "required": ["customer_id", "employee_id", "barbershop_service_id", "date", "start_time"],
+        "properties": {
+          "customer_id": { "type": "integer", "format": "int64" },
+          "employee_id": { "type": "integer", "format": "int64" },
+          "barbershop_service_id": { "type": "integer", "format": "int64" },
+          "date": { "type": "string", "example": "2026-03-31" },
+          "start_time": { "type": "string", "example": "09:00:00" }
+        }
+      }
+    }
+  }
+}

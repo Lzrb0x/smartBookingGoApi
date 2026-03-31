@@ -21,7 +21,7 @@ func NewEmployeeWorkingHourOverrideHandler(repo *repositories.EmployeeWorkingHou
 }
 
 func (h *EmployeeWorkingHourOverrideHandler) GetAll(c *gin.Context) {
-	barbershopID, err := strconv.ParseInt(c.Param("barbershopId"), 10, 64)
+	barbershopID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "barbershop_id inválido"})
 		return
@@ -54,7 +54,7 @@ func (h *EmployeeWorkingHourOverrideHandler) GetAll(c *gin.Context) {
 }
 
 func (h *EmployeeWorkingHourOverrideHandler) GetByID(c *gin.Context) {
-	barbershopID, err := strconv.ParseInt(c.Param("barbershopId"), 10, 64)
+	barbershopID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "barbershop_id inválido"})
 		return
@@ -66,7 +66,7 @@ func (h *EmployeeWorkingHourOverrideHandler) GetByID(c *gin.Context) {
 		return
 	}
 
-	overrideID, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	overrideID, err := strconv.ParseInt(c.Param("overrideId"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "id inválido"})
 		return
@@ -103,7 +103,7 @@ func (h *EmployeeWorkingHourOverrideHandler) GetByID(c *gin.Context) {
 }
 
 func (h *EmployeeWorkingHourOverrideHandler) Create(c *gin.Context) {
-	barbershopID, err := strconv.ParseInt(c.Param("barbershopId"), 10, 64)
+	barbershopID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "barbershop_id inválido"})
 		return
@@ -188,7 +188,7 @@ func (h *EmployeeWorkingHourOverrideHandler) Create(c *gin.Context) {
 }
 
 func (h *EmployeeWorkingHourOverrideHandler) Update(c *gin.Context) {
-	barbershopID, err := strconv.ParseInt(c.Param("barbershopId"), 10, 64)
+	barbershopID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "barbershop_id inválido"})
 		return
@@ -200,7 +200,7 @@ func (h *EmployeeWorkingHourOverrideHandler) Update(c *gin.Context) {
 		return
 	}
 
-	overrideID, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	overrideID, err := strconv.ParseInt(c.Param("overrideId"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "id inválido"})
 		return
@@ -295,7 +295,7 @@ func (h *EmployeeWorkingHourOverrideHandler) Update(c *gin.Context) {
 }
 
 func (h *EmployeeWorkingHourOverrideHandler) Delete(c *gin.Context) {
-	barbershopID, err := strconv.ParseInt(c.Param("barbershopId"), 10, 64)
+	barbershopID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "barbershop_id inválido"})
 		return
@@ -307,7 +307,7 @@ func (h *EmployeeWorkingHourOverrideHandler) Delete(c *gin.Context) {
 		return
 	}
 
-	overrideID, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	overrideID, err := strconv.ParseInt(c.Param("overrideId"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "id inválido"})
 		return

@@ -60,7 +60,7 @@ func (h *EmployeeHandler) Delete(c *gin.Context) {
 		return
 	}
 
-	employeeID, err := strconv.ParseInt(c.Param("employee_id"), 10, 64)
+	employeeID, err := strconv.ParseInt(c.Param("employeeId"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "id do funcionário inválido"})
 		return
