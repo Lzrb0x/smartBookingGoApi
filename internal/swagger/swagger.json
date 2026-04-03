@@ -905,6 +905,28 @@
       }
     },
     "/api/v1/barbershops/{id}/bookings": {
+      "get": {
+        "tags": ["Bookings"],
+        "summary": "List bookings for a barbershop",
+        "parameters": [
+          { "$ref": "#/components/parameters/BarbershopId" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bookings",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/BookingResponse" }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      },
       "post": {
         "tags": ["Bookings"],
         "summary": "Create booking",
@@ -931,6 +953,32 @@
           "400": { "$ref": "#/components/responses/BadRequest" },
           "404": { "$ref": "#/components/responses/NotFound" },
           "409": { "$ref": "#/components/responses/Conflict" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    },
+    "/api/v1/barbershops/{id}/bookings/employees/{employeeId}": {
+      "get": {
+        "tags": ["Bookings"],
+        "summary": "List bookings for an employee",
+        "parameters": [
+          { "$ref": "#/components/parameters/BarbershopId" },
+          { "$ref": "#/components/parameters/EmployeeId" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bookings",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/BookingResponse" }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "404": { "$ref": "#/components/responses/NotFound" },
           "500": { "$ref": "#/components/responses/InternalError" }
         }
       }

@@ -30,6 +30,22 @@ func (r *BookingRepository) ListByEmployeeAndDate(ctx context.Context, employeeI
 	return bookings, err
 }
 
+func (r *BookingRepository) ListByBarbershop(ctx context.Context, barbershopID int64) ([]models.Booking, error) {
+	var bookings []models.Booking
+	err := r.db.SQL.SelectContext(ctx, &bookings,
+		`SELECT id, customer_id, employee_id, barbershop_id, barbershop_service_id, date, start_time, end_time
+		 FROM bookings WHERE barbershop_id = $1 ORDER BY date DESC, start_time ASC`, barbershopID)
+	return bookings, err
+}
+
+func (r *BookingRepository) ListByEmployeeAndBarbershop(ctx context.Context, employeeID, barbershopID int64) ([]models.Booking, error) {
+	var bookings []models.Booking
+	err := r.db.SQL.SelectContext(ctx, &bookings,
+		`SELECT id, customer_id, employee_id, barbershop_id, barbershop_service_id, date, start_time, end_time
+		 FROM bookings WHERE employee_id = $1 AND barbershop_id = $2 ORDER BY date DESC, start_time ASC`, employeeID, barbershopID)
+	return bookings, err
+}
+
 func (r *BookingRepository) Create(ctx context.Context, booking *models.Booking) error {
 	query := `INSERT INTO bookings (customer_id, employee_id, barbershop_id, barbershop_service_id, date, start_time, end_time)
 	          VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`

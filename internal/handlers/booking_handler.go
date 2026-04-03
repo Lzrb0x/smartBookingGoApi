@@ -192,6 +192,54 @@ func (h *BookingHandler) GetAvailability(c *gin.Context) {
 	})
 }
 
+func (h *BookingHandler) GetAllByBarbershop(c *gin.Context) {
+	barbershopID, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "barbershop_id inválido"})
+		return
+	}
+
+	bookings, err := h.bookingRepo.ListByBarbershop(c.Request.Context(), barbershopID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, bookingsToResponse(bookings))
+}
+
+func (h *BookingHandler) GetAllByEmployee(c *gin.Context) {
+	barbershopID, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "barbershop_id inválido"})
+		return
+	}
+
+	employeeID, err := strconv.ParseInt(c.Param("employeeId"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "employee_id inválido"})
+		return
+	}
+
+	exists, err := h.employeeRepo.ExistsInBarbershop(c.Request.Context(), employeeID, barbershopID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	if !exists {
+		c.JSON(http.StatusNotFound, gin.H{"error": "funcionário não encontrado nesta barbearia"})
+		return
+	}
+
+	bookings, err := h.bookingRepo.ListByEmployeeAndBarbershop(c.Request.Context(), employeeID, barbershopID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, bookingsToResponse(bookings))
+}
+
 func (h *BookingHandler) Create(c *gin.Context) {
 	barbershopID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
@@ -483,4 +531,12 @@ func isSameDate(a time.Time, b time.Time) bool {
 func beginningOfDay(t time.Time) time.Time {
 	local := t.In(time.Local)
 	return time.Date(local.Year(), local.Month(), local.Day(), 0, 0, 0, 0, time.Local)
+}
+
+func bookingsToResponse(bookings []models.Booking) []dtos.BookingResponse {
+	response := make([]dtos.BookingResponse, 0, len(bookings))
+	for i := range bookings {
+		response = append(response, dtos.FromBookingModel(&bookings[i]))
+	}
+	return response
 }

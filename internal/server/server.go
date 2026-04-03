@@ -141,6 +141,8 @@ func registerRouters(cfg *config.Config, db *database.DB) http.Handler {
 
 			bookings := barbershops.Group("/:id/bookings")
 			{
+				bookings.GET("", bookingHandler.GetAllByBarbershop)
+				bookings.GET("/employees/:employeeId", bookingHandler.GetAllByEmployee)
 				bookings.POST("", bookingHandler.Create)
 			}
 		}
