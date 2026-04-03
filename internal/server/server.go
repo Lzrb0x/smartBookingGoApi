@@ -8,6 +8,7 @@ import (
 	"github.com/Lzrb0x/smartBookingGoApi/internal/database"
 	"github.com/Lzrb0x/smartBookingGoApi/internal/handlers"
 	"github.com/Lzrb0x/smartBookingGoApi/internal/repositories"
+	"github.com/Lzrb0x/smartBookingGoApi/internal/services"
 	"github.com/Lzrb0x/smartBookingGoApi/internal/swagger"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -50,6 +51,16 @@ func registerRouters(cfg *config.Config, db *database.DB) http.Handler {
 	employeeWorkingHourRepo := repositories.NewEmployeeWorkingHourRepository(db)
 	employeeWorkingHourOverrideRepo := repositories.NewEmployeeWorkingHourOverrideRepository(db)
 	bookingRepo := repositories.NewBookingRepository(db)
+	refreshTokenRepo := repositories.NewRefreshTokenRepository(db)
+
+	// Services
+	authService := services.NewAuthService(
+		userRepo,
+		refreshTokenRepo,
+		cfg.JWTSecret,
+		cfg.JWTAccessTTL,
+		cfg.JWTRefreshTTL,
+	)
 
 	// Handlers
 	userHandler := handlers.NewUserHandler(userRepo)
@@ -61,6 +72,7 @@ func registerRouters(cfg *config.Config, db *database.DB) http.Handler {
 	serviceEmployeeHandler := handlers.NewServiceEmployeeHandler(serviceEmployeeRepo)
 	employeeWorkingHourHandler := handlers.NewEmployeeWorkingHourHandler(employeeWorkingHourRepo, employeeRepo)
 	employeeWorkingHourOverrideHandler := handlers.NewEmployeeWorkingHourOverrideHandler(employeeWorkingHourOverrideRepo, employeeRepo)
+	authHandler := handlers.NewAuthHandler(authService)
 	bookingHandler := handlers.NewBookingHandler(
 		bookingRepo,
 		employeeRepo,
@@ -73,6 +85,14 @@ func registerRouters(cfg *config.Config, db *database.DB) http.Handler {
 	// Routes
 	v1 := r.Group("/api/v1")
 	{
+		auth := v1.Group("/auth")
+		{
+			auth.POST("/register", authHandler.Register)
+			auth.POST("/login", authHandler.Login)
+			auth.POST("/refresh", authHandler.Refresh)
+			auth.POST("/logout", authHandler.Logout)
+		}
+
 		users := v1.Group("/users")
 		{
 			users.GET("", userHandler.GetAll)

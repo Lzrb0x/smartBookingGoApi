@@ -30,6 +30,15 @@ func (r *UserRepository) FindByID(ctx context.Context, id int64) (*models.User, 
 	return &user, nil
 }
 
+func (r *UserRepository) FindByPhone(ctx context.Context, phone string) (*models.User, error) {
+	var user models.User
+	err := r.db.SQL.GetContext(ctx, &user, `SELECT * FROM users WHERE phone = $1 AND active = true`, phone)
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
+
 func (r *UserRepository) Create(ctx context.Context, user *models.User) error {
 	query := `
 		INSERT INTO users (user_identifier, name, email, password, phone, is_complete)

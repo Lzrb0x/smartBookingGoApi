@@ -3,6 +3,9 @@ BEGIN;
 -- Remove a constraint UNIQUE da coluna email
 ALTER TABLE users DROP CONSTRAINT IF EXISTS users_email_key;
 
+-- Garante idempotência quando a migration roda mais de uma vez
+DROP INDEX IF EXISTS users_email_unique_idx;
+
 -- Altera a coluna email para permitir NULL
 ALTER TABLE users ALTER COLUMN email DROP NOT NULL;
 

@@ -30,6 +30,11 @@ type Config struct {
 	CORSAllowMethods     []string
 	CORSAllowHeaders     []string
 	CORSAllowCredentials bool
+
+	// Auth
+	JWTSecret     string
+	JWTAccessTTL  time.Duration
+	JWTRefreshTTL time.Duration
 }
 
 func Load() (*Config, error) {
@@ -40,6 +45,7 @@ func Load() (*Config, error) {
 	cfg.AppEnv = mustGetEnv("APP_ENV", &errors)
 	cfg.Port = mustGetEnv("PORT", &errors)
 	cfg.DatabaseURL = mustGetEnv("DATABASE_URL", &errors)
+	cfg.JWTSecret = mustGetEnv("JWT_SECRET", &errors)
 
 	// Database configuration
 	if value, err := getEnvAsInt("DB_MAX_OPEN_CONNS"); err != nil {
@@ -85,8 +91,26 @@ func Load() (*Config, error) {
 		cfg.CORSAllowCredentials = value
 	}
 
+	if value, err := getEnvAsDuration("JWT_ACCESS_TTL"); err != nil {
+		errors = append(errors, err.Error())
+	} else {
+		cfg.JWTAccessTTL = value
+	}
+	if value, err := getEnvAsDuration("JWT_REFRESH_TTL"); err != nil {
+		errors = append(errors, err.Error())
+	} else {
+		cfg.JWTRefreshTTL = value
+	}
+
 	if len(errors) > 0 {
 		return nil, fmt.Errorf("missing required environment variables: %s", strings.Join(errors, ", "))
+	}
+
+	if cfg.JWTAccessTTL <= 0 {
+		cfg.JWTAccessTTL = 15 * time.Minute
+	}
+	if cfg.JWTRefreshTTL <= 0 {
+		cfg.JWTRefreshTTL = 30 * 24 * time.Hour
 	}
 
 	return cfg, nil

@@ -21,6 +21,17 @@ type User struct {
 	Bookings       []Booking `db:"-"               json:"bookings,omitempty"`
 }
 
+// RefreshToken keeps active and revoked refresh tokens for session control.
+type RefreshToken struct {
+	ID        int64      `db:"id"         json:"id"`
+	UserID    int64      `db:"user_id"    json:"user_id"`
+	TokenID   string     `db:"token_id"   json:"token_id"`
+	TokenHash string     `db:"token_hash" json:"-"`
+	ExpiresOn time.Time  `db:"expires_on" json:"expires_on"`
+	CreatedOn time.Time  `db:"created_on" json:"created_on"`
+	RevokedOn *time.Time `db:"revoked_on" json:"revoked_on,omitempty"`
+}
+
 // Owner represents the owner of a barbershop.
 type Owner struct {
 	ID          int64        `db:"id"          json:"id"`
