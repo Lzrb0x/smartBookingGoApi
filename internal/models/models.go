@@ -14,7 +14,7 @@ type User struct {
 	EntityBase
 	UserIdentifier string    `db:"user_identifier" json:"user_identifier"`
 	Name           string    `db:"name"            json:"name"`
-	Email          string    `db:"email"           json:"email"`
+	Email          *string   `db:"email"           json:"email"`
 	Password       string    `db:"password"        json:"-"`
 	Phone          string    `db:"phone"           json:"phone"`
 	IsComplete     bool      `db:"is_complete"     json:"is_complete"`

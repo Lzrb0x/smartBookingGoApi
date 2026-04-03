@@ -13,11 +13,15 @@ type CreateUserRequest struct {
 }
 
 func (r *CreateUserRequest) ToModel() *models.User {
+	var email *string
+	if r.Email != "" {
+		email = &r.Email
+	}
 	return &models.User{
 		UserIdentifier: uuid.New().String(),
 		Name:           r.Name,
 		Phone:          r.Phone,
-		Email:          r.Email,
+		Email:          email,
 		Password:       r.Password,
 	}
 }

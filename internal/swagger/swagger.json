@@ -1123,7 +1123,7 @@
           "created_on": { "type": "string", "format": "date-time" },
           "user_identifier": { "type": "string" },
           "name": { "type": "string" },
-          "email": { "type": "string" },
+          "email": { "type": "string", "nullable": true },
           "phone": { "type": "string" },
           "is_complete": { "type": "boolean" }
         }
