@@ -29,7 +29,7 @@ type EmployeeWorkingHourOverrideResponse struct {
 	IsDayOff   bool   `json:"is_day_off"`
 }
 
-func (r *CreateEmployeeWorkingHourOverrideRequest) ToModel(employeeID int64, date, startTime, endTime time.Time) *models.EmployeeWorkingHourOverride {
+func (r *CreateEmployeeWorkingHourOverrideRequest) ToModel(employeeID int64, date time.Time, startTime, endTime *time.Time) *models.EmployeeWorkingHourOverride {
 	return &models.EmployeeWorkingHourOverride{
 		EmployeeID: employeeID,
 		Date:       date,
@@ -39,7 +39,7 @@ func (r *CreateEmployeeWorkingHourOverrideRequest) ToModel(employeeID int64, dat
 	}
 }
 
-func (r *UpdateEmployeeWorkingHourOverrideRequest) ToModel(id, employeeID int64, date, startTime, endTime time.Time) *models.EmployeeWorkingHourOverride {
+func (r *UpdateEmployeeWorkingHourOverrideRequest) ToModel(id, employeeID int64, date time.Time, startTime, endTime *time.Time) *models.EmployeeWorkingHourOverride {
 	return &models.EmployeeWorkingHourOverride{
 		ID:         id,
 		EmployeeID: employeeID,
@@ -53,7 +53,7 @@ func (r *UpdateEmployeeWorkingHourOverrideRequest) ToModel(id, employeeID int64,
 func FromOverrideModel(override *models.EmployeeWorkingHourOverride) EmployeeWorkingHourOverrideResponse {
 	startTimeStr := ""
 	endTimeStr := ""
-	if !override.IsDayOff {
+	if !override.IsDayOff && override.StartTime != nil && override.EndTime != nil {
 		startTimeStr = override.StartTime.Format("15:04:05")
 		endTimeStr = override.EndTime.Format("15:04:05")
 	}

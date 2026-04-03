@@ -29,7 +29,7 @@ type EmployeeWorkingHourResponse struct {
 	IsDayOff   bool   `json:"is_day_off"`
 }
 
-func (r *CreateEmployeeWorkingHourRequest) ToModel(employeeID int64, startTime, endTime time.Time) *models.EmployeeWorkingHour {
+func (r *CreateEmployeeWorkingHourRequest) ToModel(employeeID int64, startTime, endTime *time.Time) *models.EmployeeWorkingHour {
 	return &models.EmployeeWorkingHour{
 		EmployeeID: employeeID,
 		DayOfWeek:  r.DayOfWeek,
@@ -39,7 +39,7 @@ func (r *CreateEmployeeWorkingHourRequest) ToModel(employeeID int64, startTime, 
 	}
 }
 
-func (r *UpdateEmployeeWorkingHourRequest) ToModel(id, employeeID int64, startTime, endTime time.Time) *models.EmployeeWorkingHour {
+func (r *UpdateEmployeeWorkingHourRequest) ToModel(id, employeeID int64, startTime, endTime *time.Time) *models.EmployeeWorkingHour {
 	return &models.EmployeeWorkingHour{
 		ID:         id,
 		EmployeeID: employeeID,
@@ -53,7 +53,7 @@ func (r *UpdateEmployeeWorkingHourRequest) ToModel(id, employeeID int64, startTi
 func FromWorkingHourModel(wh *models.EmployeeWorkingHour) EmployeeWorkingHourResponse {
 	startTimeStr := ""
 	endTimeStr := ""
-	if !wh.IsDayOff {
+	if !wh.IsDayOff && wh.StartTime != nil && wh.EndTime != nil {
 		startTimeStr = wh.StartTime.Format("15:04:05")
 		endTimeStr = wh.EndTime.Format("15:04:05")
 	}

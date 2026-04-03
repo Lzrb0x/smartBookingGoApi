@@ -344,8 +344,11 @@ func (h *BookingHandler) buildWindowsForDate(ctx context.Context, employeeID, ba
 		if override.IsDayOff {
 			return []timeWindow{}, nil
 		}
-		startSec := timeToSeconds(override.StartTime)
-		endSec := timeToSeconds(override.EndTime)
+		if override.StartTime == nil || override.EndTime == nil {
+			return []timeWindow{}, nil
+		}
+		startSec := timeToSeconds(*override.StartTime)
+		endSec := timeToSeconds(*override.EndTime)
 		if endSec <= startSec {
 			return []timeWindow{}, nil
 		}
@@ -371,8 +374,11 @@ func (h *BookingHandler) buildWindowsForDate(ctx context.Context, employeeID, ba
 			hasDayOff = true
 			continue
 		}
-		startSec := timeToSeconds(wh.StartTime)
-		endSec := timeToSeconds(wh.EndTime)
+		if wh.StartTime == nil || wh.EndTime == nil {
+			continue
+		}
+		startSec := timeToSeconds(*wh.StartTime)
+		endSec := timeToSeconds(*wh.EndTime)
 		if endSec <= startSec {
 			continue
 		}

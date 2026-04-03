@@ -85,24 +85,24 @@ type ServiceEmployee struct {
 
 // EmployeeWorkingHour holds the standard weekly schedule for an employee.
 type EmployeeWorkingHour struct {
-	ID         int64     `db:"id"          json:"id"`
-	EmployeeID int64     `db:"employee_id" json:"employee_id"`
-	Employee   *Employee `db:"-"           json:"employee,omitempty"`
-	DayOfWeek  int       `db:"day_of_week" json:"day_of_week"`
-	StartTime  time.Time `db:"start_time"  json:"start_time"`
-	EndTime    time.Time `db:"end_time"    json:"end_time"`
-	IsDayOff   bool      `db:"is_day_off"  json:"is_day_off"`
+	ID         int64      `db:"id"          json:"id"`
+	EmployeeID int64      `db:"employee_id" json:"employee_id"`
+	Employee   *Employee  `db:"-"           json:"employee,omitempty"`
+	DayOfWeek  int        `db:"day_of_week" json:"day_of_week"`
+	StartTime  *time.Time `db:"start_time"  json:"start_time"`
+	EndTime    *time.Time `db:"end_time"    json:"end_time"`
+	IsDayOff   bool       `db:"is_day_off"  json:"is_day_off"`
 }
 
 // EmployeeWorkingHourOverride holds one-off schedule exceptions for an employee.
 type EmployeeWorkingHourOverride struct {
-	ID         int64     `db:"id"          json:"id"`
-	EmployeeID int64     `db:"employee_id" json:"employee_id"`
-	Employee   *Employee `db:"-"           json:"employee,omitempty"`
-	Date       time.Time `db:"date"        json:"date"`
-	StartTime  time.Time `db:"start_time"  json:"start_time"`
-	EndTime    time.Time `db:"end_time"    json:"end_time"`
-	IsDayOff   bool      `db:"is_day_off"  json:"is_day_off"`
+	ID         int64      `db:"id"          json:"id"`
+	EmployeeID int64      `db:"employee_id" json:"employee_id"`
+	Employee   *Employee  `db:"-"           json:"employee,omitempty"`
+	Date       time.Time  `db:"date"        json:"date"`
+	StartTime  *time.Time `db:"start_time"  json:"start_time"`
+	EndTime    *time.Time `db:"end_time"    json:"end_time"`
+	IsDayOff   bool       `db:"is_day_off"  json:"is_day_off"`
 }
 
 // Booking is a confirmed appointment.

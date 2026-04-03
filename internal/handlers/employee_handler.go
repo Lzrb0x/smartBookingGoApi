@@ -29,6 +29,10 @@ func (h *EmployeeHandler) GetAll(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+	if len(employees) == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "nenhum funcionário encontrado para esta barbearia"})
+		return
+	}
 	c.JSON(http.StatusOK, employees)
 }
 

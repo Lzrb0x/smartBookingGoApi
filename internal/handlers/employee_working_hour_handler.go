@@ -133,7 +133,7 @@ func (h *EmployeeWorkingHourHandler) Create(c *gin.Context) {
 	}
 
 	// Parse times if not a day off
-	var startTime, endTime time.Time
+	var startTime, endTime *time.Time
 	if !req.IsDayOff {
 		if req.StartTime == "" || req.EndTime == "" {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "start_time e end_time são obrigatórios quando não é folga"})
@@ -156,8 +156,8 @@ func (h *EmployeeWorkingHourHandler) Create(c *gin.Context) {
 			return
 		}
 
-		startTime = st
-		endTime = et
+		startTime = &st
+		endTime = &et
 	}
 
 	wh := req.ToModel(employeeID, startTime, endTime)
@@ -222,7 +222,7 @@ func (h *EmployeeWorkingHourHandler) Update(c *gin.Context) {
 	}
 
 	// Parse times if not a day off
-	var startTime, endTime time.Time
+	var startTime, endTime *time.Time
 	if !req.IsDayOff {
 		if req.StartTime == "" || req.EndTime == "" {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "start_time e end_time são obrigatórios quando não é folga"})
@@ -245,8 +245,8 @@ func (h *EmployeeWorkingHourHandler) Update(c *gin.Context) {
 			return
 		}
 
-		startTime = st
-		endTime = et
+		startTime = &st
+		endTime = &et
 	}
 
 	updated := req.ToModel(whID, employeeID, startTime, endTime)
