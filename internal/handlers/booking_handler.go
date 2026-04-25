@@ -240,6 +240,92 @@ func (h *BookingHandler) GetAllByEmployee(c *gin.Context) {
 	c.JSON(http.StatusOK, bookingsToResponse(bookings))
 }
 
+func (h *BookingHandler) GetUserDashboard(c *gin.Context) {
+	customerID, ok := parseCustomerID(c)
+	if !ok {
+		return
+	}
+
+	currentBooking, err := h.bookingRepo.FindCurrentByCustomer(c.Request.Context(), customerID)
+	if err != nil && err != sql.ErrNoRows {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	recentBookings, err := h.bookingRepo.ListRecentByCustomer(c.Request.Context(), customerID, 5)
+	if err != nil && err != sql.ErrNoRows {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	recentBarbershops, err := h.bookingRepo.ListRecentBarbershopsByCustomer(c.Request.Context(), customerID, 3)
+	if err != nil && err != sql.ErrNoRows {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	var currentResponse *dtos.BookingDashboardItemResponse
+	if currentBooking != nil {
+		mapped := dtos.FromBookingDashboardItemModel(currentBooking)
+		currentResponse = &mapped
+	}
+
+	c.JSON(http.StatusOK, dtos.UserDashboardResponse{
+		CurrentBooking:    currentResponse,
+		RecentBookings:    dtos.FromBookingDashboardItemModels(recentBookings),
+		RecentBarbershops: dtos.FromRecentBarbershopModels(recentBarbershops),
+	})
+}
+
+func (h *BookingHandler) GetRecentByCustomer(c *gin.Context) {
+	customerID, ok := parseCustomerID(c)
+	if !ok {
+		return
+	}
+
+	bookings, err := h.bookingRepo.ListRecentByCustomer(c.Request.Context(), customerID, parseLimit(c, 5, 20))
+	if err != nil && err != sql.ErrNoRows {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, dtos.FromBookingDashboardItemModels(bookings))
+}
+
+func (h *BookingHandler) GetCurrentByCustomer(c *gin.Context) {
+	customerID, ok := parseCustomerID(c)
+	if !ok {
+		return
+	}
+
+	booking, err := h.bookingRepo.FindCurrentByCustomer(c.Request.Context(), customerID)
+	if err == sql.ErrNoRows {
+		c.JSON(http.StatusOK, nil)
+		return
+	}
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, dtos.FromBookingDashboardItemModel(booking))
+}
+
+func (h *BookingHandler) GetRecentBarbershopsByCustomer(c *gin.Context) {
+	customerID, ok := parseCustomerID(c)
+	if !ok {
+		return
+	}
+
+	barbershops, err := h.bookingRepo.ListRecentBarbershopsByCustomer(c.Request.Context(), customerID, parseLimit(c, 3, 10))
+	if err != nil && err != sql.ErrNoRows {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, dtos.FromRecentBarbershopModels(barbershops))
+}
+
 func (h *BookingHandler) Create(c *gin.Context) {
 	barbershopID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
@@ -379,6 +465,31 @@ func (h *BookingHandler) Create(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, dtos.FromBookingModel(booking))
+}
+
+func parseCustomerID(c *gin.Context) (int64, bool) {
+	customerID, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "customer_id inválido"})
+		return 0, false
+	}
+	return customerID, true
+}
+
+func parseLimit(c *gin.Context, defaultLimit, maxLimit int) int {
+	limitStr := c.Query("limit")
+	if limitStr == "" {
+		return defaultLimit
+	}
+
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil || limit <= 0 {
+		return defaultLimit
+	}
+	if limit > maxLimit {
+		return maxLimit
+	}
+	return limit
 }
 
 type timeWindow struct {

@@ -23,6 +23,42 @@ type BookingResponse struct {
 	EndTime             string `json:"end_time"`
 }
 
+type BookingDashboardItemResponse struct {
+	ID                         int64   `json:"id"`
+	CustomerID                 int64   `json:"customer_id"`
+	EmployeeID                 int64   `json:"employee_id"`
+	EmployeeName               string  `json:"employee_name"`
+	BarbershopID               int64   `json:"barbershop_id"`
+	BarbershopName             string  `json:"barbershop_name"`
+	BarbershopAddress          string  `json:"barbershop_address"`
+	BarbershopPhone            string  `json:"barbershop_phone"`
+	BarbershopServiceID        int64   `json:"barbershop_service_id"`
+	ServiceID                  int64   `json:"service_id"`
+	ServiceName                string  `json:"service_name"`
+	ServiceDescription         string  `json:"service_description"`
+	ServicePrice               float64 `json:"service_price"`
+	ServiceDuration            int     `json:"service_duration"`
+	ServiceDescriptionOverride string  `json:"service_description_override"`
+	Date                       string  `json:"date"`
+	StartTime                  string  `json:"start_time"`
+	EndTime                    string  `json:"end_time"`
+}
+
+type RecentBarbershopResponse struct {
+	ID              int64  `json:"id"`
+	BarbershopName  string `json:"barbershop_name"`
+	Address         string `json:"address"`
+	Phone           string `json:"phone"`
+	LastBookingDate string `json:"last_booking_date"`
+	LastStartTime   string `json:"last_start_time"`
+}
+
+type UserDashboardResponse struct {
+	CurrentBooking    *BookingDashboardItemResponse  `json:"current_booking"`
+	RecentBookings    []BookingDashboardItemResponse `json:"recent_bookings"`
+	RecentBarbershops []RecentBarbershopResponse     `json:"recent_barbershops"`
+}
+
 type AvailabilityResponse struct {
 	Date                string   `json:"date"`
 	EmployeeID          int64    `json:"employee_id"`
@@ -42,4 +78,54 @@ func FromBookingModel(booking *models.Booking) BookingResponse {
 		StartTime:           booking.StartTime.Format("15:04:05"),
 		EndTime:             booking.EndTime.Format("15:04:05"),
 	}
+}
+
+func FromBookingDashboardItemModel(booking *models.BookingDashboardItem) BookingDashboardItemResponse {
+	return BookingDashboardItemResponse{
+		ID:                         booking.ID,
+		CustomerID:                 booking.CustomerID,
+		EmployeeID:                 booking.EmployeeID,
+		EmployeeName:               booking.EmployeeName,
+		BarbershopID:               booking.BarbershopID,
+		BarbershopName:             booking.BarbershopName,
+		BarbershopAddress:          booking.BarbershopAddress,
+		BarbershopPhone:            booking.BarbershopPhone,
+		BarbershopServiceID:        booking.BarbershopServiceID,
+		ServiceID:                  booking.ServiceID,
+		ServiceName:                booking.ServiceName,
+		ServiceDescription:         booking.ServiceDescription,
+		ServicePrice:               booking.ServicePrice,
+		ServiceDuration:            booking.ServiceDuration,
+		ServiceDescriptionOverride: booking.ServiceDescriptionOverride,
+		Date:                       booking.Date.Format("2006-01-02"),
+		StartTime:                  booking.StartTime.Format("15:04:05"),
+		EndTime:                    booking.EndTime.Format("15:04:05"),
+	}
+}
+
+func FromBookingDashboardItemModels(bookings []models.BookingDashboardItem) []BookingDashboardItemResponse {
+	responses := make([]BookingDashboardItemResponse, len(bookings))
+	for i, booking := range bookings {
+		responses[i] = FromBookingDashboardItemModel(&booking)
+	}
+	return responses
+}
+
+func FromRecentBarbershopModel(barbershop *models.RecentBarbershop) RecentBarbershopResponse {
+	return RecentBarbershopResponse{
+		ID:              barbershop.ID,
+		BarbershopName:  barbershop.BarbershopName,
+		Address:         barbershop.Address,
+		Phone:           barbershop.Phone,
+		LastBookingDate: barbershop.LastBookingDate.Format("2006-01-02"),
+		LastStartTime:   barbershop.LastStartTime.Format("15:04:05"),
+	}
+}
+
+func FromRecentBarbershopModels(barbershops []models.RecentBarbershop) []RecentBarbershopResponse {
+	responses := make([]RecentBarbershopResponse, len(barbershops))
+	for i, barbershop := range barbershops {
+		responses[i] = FromRecentBarbershopModel(&barbershop)
+	}
+	return responses
 }

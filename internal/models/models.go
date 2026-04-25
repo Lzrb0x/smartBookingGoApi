@@ -131,3 +131,35 @@ type Booking struct {
 	StartTime           time.Time          `db:"start_time"            json:"start_time"`
 	EndTime             time.Time          `db:"end_time"              json:"end_time"`
 }
+
+// BookingDashboardItem is a read model for customer-facing booking summaries.
+type BookingDashboardItem struct {
+	ID                         int64     `db:"id"                           json:"id"`
+	CustomerID                 int64     `db:"customer_id"                  json:"customer_id"`
+	EmployeeID                 int64     `db:"employee_id"                  json:"employee_id"`
+	EmployeeName               string    `db:"employee_name"                json:"employee_name"`
+	BarbershopID               int64     `db:"barbershop_id"                json:"barbershop_id"`
+	BarbershopName             string    `db:"barbershop_name"              json:"barbershop_name"`
+	BarbershopAddress          string    `db:"barbershop_address"           json:"barbershop_address"`
+	BarbershopPhone            string    `db:"barbershop_phone"             json:"barbershop_phone"`
+	BarbershopServiceID        int64     `db:"barbershop_service_id"        json:"barbershop_service_id"`
+	ServiceID                  int64     `db:"service_id"                   json:"service_id"`
+	ServiceName                string    `db:"service_name"                 json:"service_name"`
+	ServiceDescription         string    `db:"service_description"          json:"service_description"`
+	ServicePrice               float64   `db:"service_price"                json:"service_price"`
+	ServiceDuration            int       `db:"service_duration"             json:"service_duration"`
+	ServiceDescriptionOverride string    `db:"service_description_override" json:"service_description_override"`
+	Date                       time.Time `db:"date"                         json:"date"`
+	StartTime                  time.Time `db:"start_time"                   json:"start_time"`
+	EndTime                    time.Time `db:"end_time"                     json:"end_time"`
+}
+
+// RecentBarbershop is a read model for the customer's most recently visited shops.
+type RecentBarbershop struct {
+	ID              int64     `db:"id"               json:"id"`
+	BarbershopName  string    `db:"barbershop_name"  json:"barbershop_name"`
+	Address         string    `db:"address"          json:"address"`
+	Phone           string    `db:"phone"            json:"phone"`
+	LastBookingDate time.Time `db:"last_booking_date" json:"last_booking_date"`
+	LastStartTime   time.Time `db:"last_start_time"   json:"last_start_time"`
+}

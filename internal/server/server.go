@@ -97,6 +97,10 @@ func registerRouters(cfg *config.Config, db *database.DB) http.Handler {
 		{
 			users.GET("", userHandler.GetAll)
 			users.GET("/:id", userHandler.GetByID)
+			users.GET("/:id/dashboard", bookingHandler.GetUserDashboard)
+			users.GET("/:id/bookings/recent", bookingHandler.GetRecentByCustomer)
+			users.GET("/:id/bookings/current", bookingHandler.GetCurrentByCustomer)
+			users.GET("/:id/barbershops/recent", bookingHandler.GetRecentBarbershopsByCustomer)
 			users.POST("", userHandler.Create)
 			users.PUT("/:id", userHandler.Update)
 			users.DELETE("/:id", userHandler.Delete)
