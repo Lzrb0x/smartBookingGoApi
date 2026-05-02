@@ -108,6 +108,7 @@ func registerRouters(cfg *config.Config, db *database.DB) http.Handler {
 
 		owners := v1.Group("/owners")
 		{
+			owners.GET("/by-user/:userId", ownerHandler.GetByUserID)
 			owners.POST("", ownerHandler.Create)
 		}
 

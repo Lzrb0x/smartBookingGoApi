@@ -7,14 +7,14 @@ import (
 )
 
 type CreateEmployeeWorkingHourRequest struct {
-	DayOfWeek int    `json:"day_of_week" binding:"required,min=0,max=6"`
+	DayOfWeek int    `json:"day_of_week" binding:"min=0,max=6"`
 	StartTime string `json:"start_time"` // HH:MM:SS format, can be empty if is_day_off
 	EndTime   string `json:"end_time"`   // HH:MM:SS format, can be empty if is_day_off
 	IsDayOff  bool   `json:"is_day_off"`
 }
 
 type UpdateEmployeeWorkingHourRequest struct {
-	DayOfWeek int    `json:"day_of_week" binding:"required,min=0,max=6"`
+	DayOfWeek int    `json:"day_of_week" binding:"min=0,max=6"`
 	StartTime string `json:"start_time"` // HH:MM:SS format, can be empty if is_day_off
 	EndTime   string `json:"end_time"`   // HH:MM:SS format, can be empty if is_day_off
 	IsDayOff  bool   `json:"is_day_off"`
