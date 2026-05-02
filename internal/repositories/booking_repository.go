@@ -46,6 +46,22 @@ func (r *BookingRepository) ListByEmployeeAndBarbershop(ctx context.Context, emp
 	return bookings, err
 }
 
+func (r *BookingRepository) ListProfessionalDashboard(ctx context.Context, barbershopID int64, date time.Time, employeeID *int64) ([]models.ProfessionalBookingItem, error) {
+	var bookings []models.ProfessionalBookingItem
+	args := []interface{}{barbershopID, date}
+	filter := ""
+	if employeeID != nil {
+		args = append(args, *employeeID)
+		filter = " AND b.employee_id = $3"
+	}
+
+	err := r.db.SQL.SelectContext(ctx, &bookings, professionalBookingSelect(`
+		WHERE b.barbershop_id = $1
+		  AND b.date = $2`+filter+`
+		ORDER BY b.start_time ASC, b.id ASC`), args...)
+	return bookings, err
+}
+
 func (r *BookingRepository) ListRecentByCustomer(ctx context.Context, customerID int64, limit int) ([]models.BookingDashboardItem, error) {
 	var bookings []models.BookingDashboardItem
 	err := r.db.SQL.SelectContext(ctx, &bookings, bookingDashboardSelect(`
@@ -165,6 +181,37 @@ func bookingDashboardSelect(suffix string) string {
 			b.start_time,
 			b.end_time
 		FROM bookings b
+		INNER JOIN employees e ON e.id = b.employee_id
+		INNER JOIN users employee_user ON employee_user.id = e.user_id
+		INNER JOIN barbershops ba ON ba.id = b.barbershop_id
+		INNER JOIN barbershop_services bs ON bs.id = b.barbershop_service_id
+		INNER JOIN services s ON s.id = bs.service_id
+	` + suffix
+}
+
+func professionalBookingSelect(suffix string) string {
+	return `
+		SELECT
+			b.id,
+			b.customer_id,
+			COALESCE(customer_user.name, '') AS customer_name,
+			COALESCE(customer_user.phone, '') AS customer_phone,
+			b.employee_id,
+			e.user_id AS employee_user_id,
+			COALESCE(employee_user.name, '') AS employee_name,
+			COALESCE(employee_user.phone, '') AS employee_phone,
+			b.barbershop_id,
+			ba.barbershop_name,
+			b.barbershop_service_id,
+			s.id AS service_id,
+			s.name AS service_name,
+			bs.price::float8 AS service_price,
+			bs.duration AS service_duration,
+			b.date,
+			b.start_time,
+			b.end_time
+		FROM bookings b
+		INNER JOIN users customer_user ON customer_user.id = b.customer_id
 		INNER JOIN employees e ON e.id = b.employee_id
 		INNER JOIN users employee_user ON employee_user.id = e.user_id
 		INNER JOIN barbershops ba ON ba.id = b.barbershop_id

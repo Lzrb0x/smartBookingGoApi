@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"net/http"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -14,12 +15,24 @@ import (
 )
 
 type EmployeeHandler struct {
-	repo     *repositories.EmployeeRepository
-	userRepo *repositories.UserRepository
+	repo           *repositories.EmployeeRepository
+	userRepo       *repositories.UserRepository
+	ownerRepo      *repositories.OwnerRepository
+	barbershopRepo *repositories.BarbershopRepository
 }
 
-func NewEmployeeHandler(repo *repositories.EmployeeRepository, userRepo *repositories.UserRepository) *EmployeeHandler {
-	return &EmployeeHandler{repo: repo, userRepo: userRepo}
+func NewEmployeeHandler(
+	repo *repositories.EmployeeRepository,
+	userRepo *repositories.UserRepository,
+	ownerRepo *repositories.OwnerRepository,
+	barbershopRepo *repositories.BarbershopRepository,
+) *EmployeeHandler {
+	return &EmployeeHandler{
+		repo:           repo,
+		userRepo:       userRepo,
+		ownerRepo:      ownerRepo,
+		barbershopRepo: barbershopRepo,
+	}
 }
 
 func (h *EmployeeHandler) GetAll(c *gin.Context) {
@@ -39,6 +52,102 @@ func (h *EmployeeHandler) GetAll(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, employees)
+}
+
+func (h *EmployeeHandler) GetStaffContext(c *gin.Context) {
+	userID, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "user_id inválido"})
+		return
+	}
+
+	authenticatedUserID, ok := authenticatedUserIDFromContext(c)
+	if !ok {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "usuário não autenticado"})
+		return
+	}
+	if authenticatedUserID != userID {
+		c.JSON(http.StatusForbidden, gin.H{"error": "você só pode consultar o próprio contexto profissional"})
+		return
+	}
+
+	contextByBarbershop := make(map[int64]dtos.StaffBarbershopContextResponse)
+	isOwner := false
+	isEmployee := false
+
+	owner, err := h.ownerRepo.FindByUserID(c.Request.Context(), userID)
+	if err == nil {
+		isOwner = true
+		barbershops, err := h.barbershopRepo.FindByOwner(c.Request.Context(), owner.ID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		for _, barbershop := range barbershops {
+			contextByBarbershop[barbershop.ID] = dtos.StaffBarbershopContextResponse{
+				ID:             barbershop.ID,
+				BarbershopName: barbershop.BarbershopName,
+				Address:        barbershop.Address,
+				Phone:          barbershop.Phone,
+				OwnerID:        barbershop.OwnerID,
+				Role:           "owner",
+			}
+		}
+	} else if err != sql.ErrNoRows {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	employees, err := h.repo.FindByUser(c.Request.Context(), userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	for _, employee := range employees {
+		isEmployee = true
+		barbershop, err := h.barbershopRepo.FindByID(c.Request.Context(), employee.BarberShopID)
+		if err == sql.ErrNoRows {
+			continue
+		}
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		employeeID := employee.ID
+		context, exists := contextByBarbershop[barbershop.ID]
+		if exists {
+			context.EmployeeID = &employeeID
+			context.Role = "owner_employee"
+			contextByBarbershop[barbershop.ID] = context
+			continue
+		}
+
+		contextByBarbershop[barbershop.ID] = dtos.StaffBarbershopContextResponse{
+			ID:             barbershop.ID,
+			BarbershopName: barbershop.BarbershopName,
+			Address:        barbershop.Address,
+			Phone:          barbershop.Phone,
+			OwnerID:        barbershop.OwnerID,
+			EmployeeID:     &employeeID,
+			Role:           "employee",
+		}
+	}
+
+	contexts := make([]dtos.StaffBarbershopContextResponse, 0, len(contextByBarbershop))
+	for _, context := range contextByBarbershop {
+		contexts = append(contexts, context)
+	}
+	sort.Slice(contexts, func(i, j int) bool {
+		return contexts[i].BarbershopName < contexts[j].BarbershopName
+	})
+
+	c.JSON(http.StatusOK, dtos.StaffContextResponse{
+		IsOwner:     isOwner,
+		IsEmployee:  isEmployee,
+		Barbershops: contexts,
+	})
 }
 
 func (h *EmployeeHandler) Create(c *gin.Context) {

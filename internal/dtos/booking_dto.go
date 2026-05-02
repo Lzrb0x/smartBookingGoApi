@@ -59,6 +59,36 @@ type UserDashboardResponse struct {
 	RecentBarbershops []RecentBarbershopResponse     `json:"recent_barbershops"`
 }
 
+type ProfessionalBookingItemResponse struct {
+	ID                  int64   `json:"id"`
+	CustomerID          int64   `json:"customer_id"`
+	CustomerName        string  `json:"customer_name"`
+	CustomerPhone       string  `json:"customer_phone"`
+	EmployeeID          int64   `json:"employee_id"`
+	EmployeeUserID      int64   `json:"employee_user_id"`
+	EmployeeName        string  `json:"employee_name"`
+	EmployeePhone       string  `json:"employee_phone"`
+	BarbershopID        int64   `json:"barbershop_id"`
+	BarbershopName      string  `json:"barbershop_name"`
+	BarbershopServiceID int64   `json:"barbershop_service_id"`
+	ServiceID           int64   `json:"service_id"`
+	ServiceName         string  `json:"service_name"`
+	ServicePrice        float64 `json:"service_price"`
+	ServiceDuration     int     `json:"service_duration"`
+	Date                string  `json:"date"`
+	StartTime           string  `json:"start_time"`
+	EndTime             string  `json:"end_time"`
+}
+
+type ProfessionalBookingDashboardResponse struct {
+	Date             string                            `json:"date"`
+	EmployeeID       *int64                            `json:"employee_id"`
+	EstimatedRevenue float64                           `json:"estimated_revenue"`
+	AppointmentCount int                               `json:"appointment_count"`
+	TotalDuration    int                               `json:"total_duration"`
+	Bookings         []ProfessionalBookingItemResponse `json:"bookings"`
+}
+
 type AvailabilityResponse struct {
 	Date                string   `json:"date"`
 	EmployeeID          int64    `json:"employee_id"`
@@ -107,6 +137,37 @@ func FromBookingDashboardItemModels(bookings []models.BookingDashboardItem) []Bo
 	responses := make([]BookingDashboardItemResponse, len(bookings))
 	for i, booking := range bookings {
 		responses[i] = FromBookingDashboardItemModel(&booking)
+	}
+	return responses
+}
+
+func FromProfessionalBookingItemModel(booking *models.ProfessionalBookingItem) ProfessionalBookingItemResponse {
+	return ProfessionalBookingItemResponse{
+		ID:                  booking.ID,
+		CustomerID:          booking.CustomerID,
+		CustomerName:        booking.CustomerName,
+		CustomerPhone:       booking.CustomerPhone,
+		EmployeeID:          booking.EmployeeID,
+		EmployeeUserID:      booking.EmployeeUserID,
+		EmployeeName:        booking.EmployeeName,
+		EmployeePhone:       booking.EmployeePhone,
+		BarbershopID:        booking.BarbershopID,
+		BarbershopName:      booking.BarbershopName,
+		BarbershopServiceID: booking.BarbershopServiceID,
+		ServiceID:           booking.ServiceID,
+		ServiceName:         booking.ServiceName,
+		ServicePrice:        booking.ServicePrice,
+		ServiceDuration:     booking.ServiceDuration,
+		Date:                booking.Date.Format("2006-01-02"),
+		StartTime:           booking.StartTime.Format("15:04:05"),
+		EndTime:             booking.EndTime.Format("15:04:05"),
+	}
+}
+
+func FromProfessionalBookingItemModels(bookings []models.ProfessionalBookingItem) []ProfessionalBookingItemResponse {
+	responses := make([]ProfessionalBookingItemResponse, len(bookings))
+	for i, booking := range bookings {
+		responses[i] = FromProfessionalBookingItemModel(&booking)
 	}
 	return responses
 }

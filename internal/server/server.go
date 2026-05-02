@@ -66,7 +66,7 @@ func registerRouters(cfg *config.Config, db *database.DB) http.Handler {
 	userHandler := handlers.NewUserHandler(userRepo)
 	barbershopHandler := handlers.NewBarbershopHandler(barbershopRepo)
 	ownerHandler := handlers.NewOwnerHandler(ownerRepo)
-	employeeHandler := handlers.NewEmployeeHandler(employeeRepo, userRepo)
+	employeeHandler := handlers.NewEmployeeHandler(employeeRepo, userRepo, ownerRepo, barbershopRepo)
 	serviceHandler := handlers.NewServiceHandler(serviceRepo)
 	barbershopServiceHandler := handlers.NewBarbershopServiceHandler(barbershopServiceRepo)
 	serviceEmployeeHandler := handlers.NewServiceEmployeeHandler(serviceEmployeeRepo)
@@ -76,6 +76,8 @@ func registerRouters(cfg *config.Config, db *database.DB) http.Handler {
 	bookingHandler := handlers.NewBookingHandler(
 		bookingRepo,
 		employeeRepo,
+		ownerRepo,
+		barbershopRepo,
 		barbershopServiceRepo,
 		serviceEmployeeRepo,
 		employeeWorkingHourRepo,
@@ -97,6 +99,7 @@ func registerRouters(cfg *config.Config, db *database.DB) http.Handler {
 		{
 			users.GET("", userHandler.GetAll)
 			users.GET("/:id", userHandler.GetByID)
+			users.GET("/:id/staff-context", authMiddleware(cfg.JWTSecret), employeeHandler.GetStaffContext)
 			users.GET("/:id/dashboard", bookingHandler.GetUserDashboard)
 			users.GET("/:id/bookings/recent", bookingHandler.GetRecentByCustomer)
 			users.GET("/:id/bookings/current", bookingHandler.GetCurrentByCustomer)
@@ -167,6 +170,7 @@ func registerRouters(cfg *config.Config, db *database.DB) http.Handler {
 			bookings := barbershops.Group("/:id/bookings")
 			{
 				bookings.GET("", bookingHandler.GetAllByBarbershop)
+				bookings.GET("/dashboard", authMiddleware(cfg.JWTSecret), bookingHandler.GetProfessionalDashboard)
 				bookings.GET("/employees/:employeeId", bookingHandler.GetAllByEmployee)
 				bookings.POST("", bookingHandler.Create)
 				bookings.DELETE("/:bookingId", authMiddleware(cfg.JWTSecret), bookingHandler.Cancel)

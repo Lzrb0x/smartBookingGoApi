@@ -23,6 +23,13 @@ func (r *EmployeeRepository) FindByBarbershop(ctx context.Context, barbershopID 
 	return employees, err
 }
 
+func (r *EmployeeRepository) FindByUser(ctx context.Context, userID int64) ([]models.Employee, error) {
+	var employees []models.Employee
+	err := r.db.SQL.SelectContext(ctx, &employees,
+		`SELECT * FROM employees WHERE user_id = $1 ORDER BY barbershop_id, id`, userID)
+	return employees, err
+}
+
 func (r *EmployeeRepository) FindByUserAndBarbershop(ctx context.Context, userID, barbershopID int64) (*models.Employee, error) {
 	var employee models.Employee
 	err := r.db.SQL.GetContext(ctx, &employee,

@@ -30,6 +30,13 @@ func (r *BarbershopRepository) FindByID(ctx context.Context, id int64) (*models.
 	return &barbershop, nil
 }
 
+func (r *BarbershopRepository) FindByOwner(ctx context.Context, ownerID int64) ([]models.Barbershop, error) {
+	var barbershops []models.Barbershop
+	err := r.db.SQL.SelectContext(ctx, &barbershops,
+		`SELECT * FROM barbershops WHERE owner_id = $1 ORDER BY barbershop_name`, ownerID)
+	return barbershops, err
+}
+
 func (r *BarbershopRepository) Create(ctx context.Context, barbershop *models.Barbershop) error {
 	query := `
 		INSERT INTO barbershops (barbershop_name, address, phone, owner_id)

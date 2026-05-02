@@ -18,6 +18,8 @@ import (
 type BookingHandler struct {
 	bookingRepo             *repositories.BookingRepository
 	employeeRepo            *repositories.EmployeeRepository
+	ownerRepo               *repositories.OwnerRepository
+	barbershopRepo          *repositories.BarbershopRepository
 	barbershopServiceRepo   *repositories.BarbershopServiceRepository
 	serviceEmployeeRepo     *repositories.ServiceEmployeeRepository
 	workingHourRepo         *repositories.EmployeeWorkingHourRepository
@@ -27,6 +29,8 @@ type BookingHandler struct {
 func NewBookingHandler(
 	bookingRepo *repositories.BookingRepository,
 	employeeRepo *repositories.EmployeeRepository,
+	ownerRepo *repositories.OwnerRepository,
+	barbershopRepo *repositories.BarbershopRepository,
 	barbershopServiceRepo *repositories.BarbershopServiceRepository,
 	serviceEmployeeRepo *repositories.ServiceEmployeeRepository,
 	workingHourRepo *repositories.EmployeeWorkingHourRepository,
@@ -35,6 +39,8 @@ func NewBookingHandler(
 	return &BookingHandler{
 		bookingRepo:             bookingRepo,
 		employeeRepo:            employeeRepo,
+		ownerRepo:               ownerRepo,
+		barbershopRepo:          barbershopRepo,
 		barbershopServiceRepo:   barbershopServiceRepo,
 		serviceEmployeeRepo:     serviceEmployeeRepo,
 		workingHourRepo:         workingHourRepo,
@@ -238,6 +244,123 @@ func (h *BookingHandler) GetAllByEmployee(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, bookingsToResponse(bookings))
+}
+
+func (h *BookingHandler) GetProfessionalDashboard(c *gin.Context) {
+	barbershopID, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "barbershop_id inválido"})
+		return
+	}
+
+	authenticatedUserID, ok := authenticatedUserIDFromContext(c)
+	if !ok {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "usuário não autenticado"})
+		return
+	}
+
+	dateStr := c.Query("date")
+	if dateStr == "" {
+		dateStr = time.Now().Format("2006-01-02")
+	}
+	date, err := time.ParseInLocation("2006-01-02", dateStr, time.Local)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "date inválido (formato: YYYY-MM-DD)"})
+		return
+	}
+
+	filterEmployeeID, ok := h.authorizedProfessionalEmployeeFilter(c, authenticatedUserID, barbershopID)
+	if !ok {
+		return
+	}
+
+	bookings, err := h.bookingRepo.ListProfessionalDashboard(c.Request.Context(), barbershopID, date, filterEmployeeID)
+	if err != nil && err != sql.ErrNoRows {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	var estimatedRevenue float64
+	var totalDuration int
+	for _, booking := range bookings {
+		estimatedRevenue += booking.ServicePrice
+		totalDuration += booking.ServiceDuration
+	}
+
+	c.JSON(http.StatusOK, dtos.ProfessionalBookingDashboardResponse{
+		Date:             date.Format("2006-01-02"),
+		EmployeeID:       filterEmployeeID,
+		EstimatedRevenue: estimatedRevenue,
+		AppointmentCount: len(bookings),
+		TotalDuration:    totalDuration,
+		Bookings:         dtos.FromProfessionalBookingItemModels(bookings),
+	})
+}
+
+func (h *BookingHandler) authorizedProfessionalEmployeeFilter(c *gin.Context, userID, barbershopID int64) (*int64, bool) {
+	barbershop, err := h.barbershopRepo.FindByID(c.Request.Context(), barbershopID)
+	if err == sql.ErrNoRows {
+		c.JSON(http.StatusNotFound, gin.H{"error": "barbearia não encontrada"})
+		return nil, false
+	}
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return nil, false
+	}
+
+	isOwner := false
+	owner, err := h.ownerRepo.FindByUserID(c.Request.Context(), userID)
+	if err == nil && owner.ID == barbershop.OwnerID {
+		isOwner = true
+	} else if err != nil && err != sql.ErrNoRows {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return nil, false
+	}
+
+	var ownEmployeeID *int64
+	employee, err := h.employeeRepo.FindByUserAndBarbershop(c.Request.Context(), userID, barbershopID)
+	if err == nil {
+		ownEmployeeID = &employee.ID
+	} else if err != sql.ErrNoRows {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return nil, false
+	}
+
+	if !isOwner && ownEmployeeID == nil {
+		c.JSON(http.StatusForbidden, gin.H{"error": "você não tem acesso profissional a esta barbearia"})
+		return nil, false
+	}
+
+	employeeFilter := c.Query("employee_id")
+	if employeeFilter == "" || employeeFilter == "all" {
+		if isOwner {
+			return nil, true
+		}
+		return ownEmployeeID, true
+	}
+
+	requestedEmployeeID, err := strconv.ParseInt(employeeFilter, 10, 64)
+	if err != nil || requestedEmployeeID <= 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "employee_id inválido"})
+		return nil, false
+	}
+
+	exists, err := h.employeeRepo.ExistsInBarbershop(c.Request.Context(), requestedEmployeeID, barbershopID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return nil, false
+	}
+	if !exists {
+		c.JSON(http.StatusNotFound, gin.H{"error": "funcionário não encontrado nesta barbearia"})
+		return nil, false
+	}
+
+	if !isOwner && (ownEmployeeID == nil || requestedEmployeeID != *ownEmployeeID) {
+		c.JSON(http.StatusForbidden, gin.H{"error": "funcionário só pode ver os próprios agendamentos"})
+		return nil, false
+	}
+
+	return &requestedEmployeeID, true
 }
 
 func (h *BookingHandler) GetUserDashboard(c *gin.Context) {
