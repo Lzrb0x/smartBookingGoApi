@@ -154,6 +154,14 @@ type BookingDashboardItem struct {
 	EndTime                    time.Time `db:"end_time"                     json:"end_time"`
 }
 
+// BookingCancellationDetails carries the user identities allowed to cancel a booking.
+type BookingCancellationDetails struct {
+	ID             int64 `db:"id"               json:"id"`
+	CustomerID     int64 `db:"customer_id"      json:"customer_id"`
+	EmployeeUserID int64 `db:"employee_user_id" json:"employee_user_id"`
+	OwnerUserID    int64 `db:"owner_user_id"    json:"owner_user_id"`
+}
+
 // RecentBarbershop is a read model for the customer's most recently visited shops.
 type RecentBarbershop struct {
 	ID              int64     `db:"id"               json:"id"`

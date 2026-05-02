@@ -90,6 +90,27 @@ func (r *BookingRepository) ListRecentBarbershopsByCustomer(ctx context.Context,
 	return barbershops, err
 }
 
+func (r *BookingRepository) FindCancellationDetails(ctx context.Context, bookingID, barbershopID int64) (*models.BookingCancellationDetails, error) {
+	var details models.BookingCancellationDetails
+	err := r.db.SQL.GetContext(ctx, &details, `
+		SELECT
+			b.id,
+			b.customer_id,
+			e.user_id AS employee_user_id,
+			owner_user.id AS owner_user_id
+		FROM bookings b
+		INNER JOIN employees e ON e.id = b.employee_id
+		INNER JOIN barbershops ba ON ba.id = b.barbershop_id
+		INNER JOIN owners o ON o.id = ba.owner_id
+		INNER JOIN users owner_user ON owner_user.id = o.user_id
+		WHERE b.id = $1 AND b.barbershop_id = $2
+	`, bookingID, barbershopID)
+	if err != nil {
+		return nil, err
+	}
+	return &details, nil
+}
+
 func (r *BookingRepository) Create(ctx context.Context, booking *models.Booking) error {
 	query := `INSERT INTO bookings (customer_id, employee_id, barbershop_id, barbershop_service_id, date, start_time, end_time)
 	          VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`
@@ -102,6 +123,24 @@ func (r *BookingRepository) Create(ctx context.Context, booking *models.Booking)
 		booking.StartTime,
 		booking.EndTime,
 	).Scan(&booking.ID)
+}
+
+func (r *BookingRepository) Delete(ctx context.Context, bookingID, barbershopID int64) (bool, error) {
+	result, err := r.db.SQL.ExecContext(ctx,
+		`DELETE FROM bookings WHERE id = $1 AND barbershop_id = $2`,
+		bookingID,
+		barbershopID,
+	)
+	if err != nil {
+		return false, err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return false, err
+	}
+
+	return rowsAffected > 0, nil
 }
 
 func bookingDashboardSelect(suffix string) string {

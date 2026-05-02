@@ -168,6 +168,7 @@ func registerRouters(cfg *config.Config, db *database.DB) http.Handler {
 				bookings.GET("", bookingHandler.GetAllByBarbershop)
 				bookings.GET("/employees/:employeeId", bookingHandler.GetAllByEmployee)
 				bookings.POST("", bookingHandler.Create)
+				bookings.DELETE("/:bookingId", authMiddleware(cfg.JWTSecret), bookingHandler.Cancel)
 			}
 		}
 

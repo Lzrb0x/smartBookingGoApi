@@ -467,6 +467,65 @@ func (h *BookingHandler) Create(c *gin.Context) {
 	c.JSON(http.StatusCreated, dtos.FromBookingModel(booking))
 }
 
+func (h *BookingHandler) Cancel(c *gin.Context) {
+	barbershopID, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "barbershop_id inválido"})
+		return
+	}
+
+	bookingID, err := strconv.ParseInt(c.Param("bookingId"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "booking_id inválido"})
+		return
+	}
+
+	authenticatedUserID, ok := authenticatedUserIDFromContext(c)
+	if !ok {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "usuário não autenticado"})
+		return
+	}
+
+	details, err := h.bookingRepo.FindCancellationDetails(c.Request.Context(), bookingID, barbershopID)
+	if err == sql.ErrNoRows {
+		c.JSON(http.StatusNotFound, gin.H{"error": "agendamento não encontrado"})
+		return
+	}
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	if details.CustomerID != authenticatedUserID &&
+		details.EmployeeUserID != authenticatedUserID &&
+		details.OwnerUserID != authenticatedUserID {
+		c.JSON(http.StatusForbidden, gin.H{"error": "você não tem permissão para cancelar este agendamento"})
+		return
+	}
+
+	deleted, err := h.bookingRepo.Delete(c.Request.Context(), bookingID, barbershopID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	if !deleted {
+		c.JSON(http.StatusNotFound, gin.H{"error": "agendamento não encontrado"})
+		return
+	}
+
+	c.Status(http.StatusNoContent)
+}
+
+func authenticatedUserIDFromContext(c *gin.Context) (int64, bool) {
+	value, exists := c.Get("authenticated_user_id")
+	if !exists {
+		return 0, false
+	}
+
+	userID, ok := value.(int64)
+	return userID, ok && userID > 0
+}
+
 func parseCustomerID(c *gin.Context) (int64, bool) {
 	customerID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
