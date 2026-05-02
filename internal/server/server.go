@@ -66,7 +66,7 @@ func registerRouters(cfg *config.Config, db *database.DB) http.Handler {
 	userHandler := handlers.NewUserHandler(userRepo)
 	barbershopHandler := handlers.NewBarbershopHandler(barbershopRepo)
 	ownerHandler := handlers.NewOwnerHandler(ownerRepo)
-	employeeHandler := handlers.NewEmployeeHandler(employeeRepo)
+	employeeHandler := handlers.NewEmployeeHandler(employeeRepo, userRepo)
 	serviceHandler := handlers.NewServiceHandler(serviceRepo)
 	barbershopServiceHandler := handlers.NewBarbershopServiceHandler(barbershopServiceRepo)
 	serviceEmployeeHandler := handlers.NewServiceEmployeeHandler(serviceEmployeeRepo)

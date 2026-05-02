@@ -395,6 +395,7 @@
           "Employees"
         ],
         "summary": "Create employee for a barbershop",
+        "description": "Registers an employee by identifying the user with at least one of: user_id, email or phone. If multiple identifiers are sent, they must point to the same user.",
         "parameters": [
           {
             "$ref": "#/components/parameters/BarbershopId"
@@ -423,6 +424,9 @@
           },
           "400": {
             "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
           },
           "500": {
             "$ref": "#/components/responses/InternalError"
@@ -2259,14 +2263,43 @@
       },
       "CreateEmployeeRequest": {
         "type": "object",
-        "required": [
-          "user_id"
+        "anyOf": [
+          {
+            "required": [
+              "user_id"
+            ]
+          },
+          {
+            "required": [
+              "email"
+            ]
+          },
+          {
+            "required": [
+              "phone"
+            ]
+          }
         ],
         "properties": {
           "user_id": {
             "type": "integer",
-            "format": "int64"
+            "format": "int64",
+            "description": "User ID to link as employee."
+          },
+          "email": {
+            "type": "string",
+            "description": "User email to identify the employee."
+          },
+          "phone": {
+            "type": "string",
+            "description": "User phone to identify the employee."
           }
+        },
+        "description": "Provide at least one identifier: user_id, email or phone. When combining fields, they must resolve to the same user.",
+        "example": {
+          "user_id": 42,
+          "email": "barbeiro@exemplo.com",
+          "phone": "11999999999"
         }
       },
       "CreateServiceRequest": {

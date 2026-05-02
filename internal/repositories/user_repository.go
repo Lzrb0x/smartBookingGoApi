@@ -39,6 +39,15 @@ func (r *UserRepository) FindByPhone(ctx context.Context, phone string) (*models
 	return &user, nil
 }
 
+func (r *UserRepository) FindByEmail(ctx context.Context, email string) (*models.User, error) {
+	var user models.User
+	err := r.db.SQL.GetContext(ctx, &user, `SELECT * FROM users WHERE lower(email) = lower($1) AND active = true`, email)
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
+
 func (r *UserRepository) Create(ctx context.Context, user *models.User) error {
 	query := `
 		INSERT INTO users (user_identifier, name, email, password, phone, is_complete)
